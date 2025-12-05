@@ -3,7 +3,7 @@
 # ======================================================
 # Script: s-01-dispositivos-almacenamiento-root.sh
 # Autor: Benítez Pérez Michelle Paulina
-#        Hernandez Garcia Pilar Jaquelin
+#        Hernández García Pilar Jaqueline
 # Fecha: 05/12/2025
 # Descripción: Creación de loop devices para simular discos.
 # ======================================================
