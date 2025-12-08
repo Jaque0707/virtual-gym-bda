@@ -40,7 +40,6 @@ create database free
   enable pluggable database
     seed
       file_name_convert = ('/opt/oracle/oradata/FREE','/opt/oracle/oradata/FREE/pdbseed')
-  
     system datafiles size 250m autoextend on next 10m maxsize unlimited
     sysaux datafiles size 200m autoextend on next 10m maxsize unlimited
   local undo on
