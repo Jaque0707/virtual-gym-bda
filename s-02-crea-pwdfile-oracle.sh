@@ -3,8 +3,9 @@
 # ======================================================
 # Script: pwdfile 
 # Autor: Benítez Pérez Michelle Paulina
-#        Hernandez Garcia Pilar Jaquelin
+#        Hernández García Pilar Jaqueline
 # Fecha: 05/12/2025
+# ======================================================
 
 
 archivoPwd="/opt/oracle/product/23ai/dbhomeFree/dbs/orapwfree"
@@ -25,7 +26,6 @@ echo "Generando un archivo de passwords nuevo, proporcionar el password de SYS a
 /opt/oracle/product/23ai/dbhomeFree/bin/orapwd FILE="/opt/oracle/product/23ai/dbhomeFree/dbs/orapwfree" \
 FORMAT=12.2 \
 SYS=password password=Med1aStream*
-SYS
 
 echo "validando la existencia del nuevo archivo"
 if [ -f "${archivoPwd}" ]; then
