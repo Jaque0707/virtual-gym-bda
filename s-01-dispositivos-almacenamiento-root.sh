@@ -31,6 +31,6 @@ mkfs.ext4 disk12.img
 mkfs.ext4 disk13.img
 
 # Crear directorios de montaje
-mkdir -p /unam/bda/disks/d11
-mkdir -p /unam/bda/disks/d12
-mkdir -p /unam/bda/disks/d13
+mkdir -p /unam/bda/pf/c0/d11
+mkdir -p /unam/bda/pf/c0/d12
+mkdir -p /unam/bda/pf/c0/d13
