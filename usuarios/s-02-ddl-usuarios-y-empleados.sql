@@ -14,12 +14,28 @@ CREATE TABLE cliente (
   fecha_nacimiento  DATE          NOT NULL,
   curp              VARCHAR2(20)  NOT NULL,
   foto              BLOB          NOT NULL,
-  CONSTRAINT pk_cliente PRIMARY KEY (cliente_id),
-  CONSTRAINT cliente_fecha_nacimiento_chk
+  
+  CONSTRAINT cliente_fecha_nacimiento_chk,
     CHECK (fecha_nacimiento <= SYSDATE),
-  CONSTRAINT cliente_email_uk unique(email),
-  CONSTRAINT cliente_curp_uk unique(curp),
+  CONSTRAINT cliente_email_uk unique(email)
+    USING INDEX
+      TABLESPACE clientes_c1_data_ts ,
+  CONSTRAINT cliente_curp_uk unique(curp)
+    USING INDEX
+      TABLESPACE clientes_c1_data_ts ,
   CONSTRAINT cliente_username_uk unique(username)
+    USING INDEX
+      TABLESPACE clientes_c1_data_ts , 
+  CONSTRAINT pk_cliente PRIMARY KEY (cliente_id)
+    USING INDEX
+      TABLESPACE clientes_c1_data_ts              -- índice de la PK en el TS de datos
+)
+TABLESPACE clientes_c1_data_ts                    -- filas de la tabla
+LOB (foto) STORE AS SECUREFILE 
+  cliente_foto_lob (
+    TABLESPACE usuarios_c2_lob_ts                    -- segmento LOB de la foto
+      INDEX cliente_foto_lob_ix
+        TABLESPACE clientes_c1_data_ts              -- índice del LOB
 );
 
 CREATE TABLE puesto (
@@ -27,9 +43,14 @@ CREATE TABLE puesto (
   clave       VARCHAR2(5)    NOT NULL,
   descripcion VARCHAR2(200)  NOT NULL,
   nombre      VARCHAR2(40)   NOT NULL,
-  CONSTRAINT pk_puesto PRIMARY KEY (puesto_id),
+  CONSTRAINT pk_puesto PRIMARY KEY (puesto_id)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts,  
   CONSTRAINT puesto_clave_uk unique(clave)
-);
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts 
+)
+TABLESPACE operacion_c1_data_ts; 
 
 CREATE TABLE empleado (
   empleado_id      NUMBER(12) GENERATED ALWAYS AS IDENTITY,
@@ -49,9 +70,22 @@ CREATE TABLE empleado (
   -- Instructor (I) / Administrativo (A)
   CONSTRAINT empleado_tipo_empleado_chk
     CHECK (tipo_empleado IN ('I','A')),
-  CONSTRAINT empleado_curp_uk unique(curp), 
-  CONSTRAINT empleado_rfc_uk unique(rfc),
+  CONSTRAINT empleado_curp_uk unique(curp)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts, 
+  CONSTRAINT empleado_rfc_uk unique(rfc)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts,
   CONSTRAINT empleado_email_uk unique(email)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts            
+)
+TABLESPACE operacion_c1_data_ts                     
+LOB (foto) STORE AS SECUREFILE 
+  empleado_foto_lob (
+    TABLESPACE usuarios_c2_lob_ts                   
+    INDEX empleado_foto_lob_ix
+      TABLESPACE operacion_c1_data_ts              
 );
 
 CREATE TABLE sensor (
@@ -60,11 +94,16 @@ CREATE TABLE sensor (
   fecha_compra  DATE          NOT NULL,
   marca         VARCHAR2(40)  NOT NULL,
   cliente_id    NUMBER(12)  NOT NULL,
-  CONSTRAINT pk_sensor PRIMARY KEY (sensor_id),
+  CONSTRAINT pk_sensor PRIMARY KEY (sensor_id)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts ,
   CONSTRAINT sensor_fecha_compra_chk
     CHECK (fecha_compra <= SYSDATE),
-  CONSTRAINT sensor_numero_serie_uk unique(numero_serie); 
-);
+  CONSTRAINT sensor_numero_serie_uk unique(numero_serie)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts            
+)
+TABLESPACE cliente_c1_data_ts; 
 
 CREATE TABLE sesion (
   sesion_id                NUMBER(12)   GENERATED ALWAYS AS IDENTITY,
@@ -74,7 +113,9 @@ CREATE TABLE sesion (
   fecha_inicio             DATE         NOT NULL,
   sala_id_rid              NUMBER(12)   NOT NULL,
   empleado_instructor_id   NUMBER(12)   NOT NULL,
-  CONSTRAINT pk_sesion PRIMARY KEY (sesion_id),
+  CONSTRAINT pk_sesion PRIMARY KEY (sesion_id)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts,
   CONSTRAINT sesion_folio_chk
     CHECK (folio > 0),
   CONSTRAINT sesion_duracion_minutos_chk
@@ -82,7 +123,10 @@ CREATE TABLE sesion (
   CONSTRAINT sesion_fecha_inicio_chk
     CHECK (fecha_inicio <= SYSDATE),
   CONSTRAINT sesion_folio_uk unique(folio); 
-);
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts            
+)
+TABLESPACE operacion_c1_data_ts;   
 
 CREATE TABLE bitacora (
   bitacora_id NUMBER(12) GENERATED ALWAYS AS IDENTITY,
@@ -90,8 +134,10 @@ CREATE TABLE bitacora (
   minuto      NUMBER(3),
   sesion_id   NUMBER(12) NOT NULL,
   CONSTRAINT pk_bitacora PRIMARY KEY (bitacora_id)
-
-);
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts            
+)
+TABLESPACE operacion_c1_data_ts;
 
 CREATE TABLE credencial (
   credencial_id    NUMBER(12)    GENERATED ALWAYS AS IDENTITY,
@@ -100,19 +146,32 @@ CREATE TABLE credencial (
   vigencia         DATE          NOT NULL,
   codigo_barras    VARCHAR2(20),
   cliente_id       NUMBER(12)    NOT NULL,
-  CONSTRAINT pk_credencial PRIMARY KEY (credencial_id),
+  CONSTRAINT pk_credencial PRIMARY KEY (credencial_id)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts,
   CONSTRAINT credencial_folio_uk unique(folio),
   CONSTRAINT credencial_codigo_barras_uk unique(codigo_barras)
-);
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts            
+)
+TABLESPACE cleinte_c1_data_ts;  
 
 CREATE TABLE huella_dactilar (
   huella_id       NUMBER(12) GENERATED ALWAYS AS IDENTITY,
   empleado_id     NUMBER(12)  NOT NULL,
   num_dedo        NUMBER(12)  NOT NULL,
   huella_dactilar BLOB         NOT NULL,
-  CONSTRAINT pk_huella_dactilar PRIMARY KEY (huella_id),
+  CONSTRAINT pk_huella_dactilar PRIMARY KEY (huella_id)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts,
   CONSTRAINT huella_dactilar_num_dedo_chk
     CHECK (num_dedo BETWEEN 1 AND 12)
+)
+TABLESPACE operacion_c1_data_ts
+LOB (huella_dactilar) STORE AS SECUREFILE huella_dactilar_lob (
+  TABLESPACE sensibles_c2_lob_ts       
+  INDEX huella_dactilar_lob_ix
+    TABLESPACE operacion_c1_data_ts
 );
 
 CREATE TABLE instructor (
@@ -121,9 +180,14 @@ CREATE TABLE instructor (
   cedula_profesional VARCHAR2(20)  NOT NULL,
   anios_experiencia  NUMBER(2)  NOT NULL,
   url_trayectoria    VARCHAR2(500),
-  CONSTRAINT pk_instructor PRIMARY KEY (empleado_id),
+  CONSTRAINT pk_instructor PRIMARY KEY (empleado_id)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts,
   CONSTRAINT instructor_cedula_profesional_uk unique(cedula_profesional)  
-);
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts            
+)
+TABLESPACE operacion_c1_data_ts;
 
 CREATE TABLE administrativo (
   empleado_id       NUMBER(12)  NOT NULL,
@@ -131,8 +195,18 @@ CREATE TABLE administrativo (
   password          VARCHAR2(40) NOT NULL,
   descripcion_rol   VARCHAR2(200) NOT NULL,
   certificado_digital BLOB       NOT NULL,
-  CONSTRAINT pk_administrativo PRIMARY KEY (empleado_id), 
+  CONSTRAINT pk_administrativo PRIMARY KEY (empleado_id)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts, 
   CONSTRAINT administrativo_username_uk unique(username)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts
+)
+TABLESPACE operacion_c1_data_ts
+LOB (certificado_digital) STORE AS SECUREFILE administrativo_cert_lob (
+    TABLESPACE sensibles_c2_lob_ts       
+    INDEX administrativo_cert_lob_ix
+      TABLESPACE operacion_c1_data_ts
 );
 
 CREATE TABLE sesion_aparato (
@@ -140,7 +214,10 @@ CREATE TABLE sesion_aparato (
   aparato_id_rid        NUMBER(12) NOT NULL,
   sesion_id         NUMBER(12) NOT NULL,
   CONSTRAINT pk_sesion_aparato PRIMARY KEY (sesion_aparato_id)
-);
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts            
+)
+TABLESPACE operacion_c1_data_ts;
 
 CREATE TABLE registro_medidas (
   registro_medidas_id      NUMBER(12) GENERATED ALWAYS AS IDENTITY,
@@ -150,8 +227,10 @@ CREATE TABLE registro_medidas (
   peso             NUMBER(5,2)  NOT NULL,
   cliente_id       NUMBER(12) NOT NULL,
   CONSTRAINT pk_registro_medidas PRIMARY KEY (registro_medidas_id)
-);
-
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts            
+)
+TABLESPACE cliente_c1_data_ts;
 --------------------------------------------------------
 --  FOREIGN KEYS
 --------------------------------------------------------
