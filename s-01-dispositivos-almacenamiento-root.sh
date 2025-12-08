@@ -10,25 +10,25 @@
 mkdir -p /unam/bda/disk-images
 cd /unam/bda/disk-images
 
-dd if=/dev/zero of=disk1.img bs=100M count=10
-dd if=/dev/zero of=disk2.img bs=100M count=10
-dd if=/dev/zero of=disk3.img bs=100M count=10
+dd if=/dev/zero of=disk11.img bs=100M count=10
+dd if=/dev/zero of=disk12.img bs=100M count=10
+dd if=/dev/zero of=disk13.img bs=100M count=10
 
 # Verificar los archivos creados
 du -sh disk*.img
 
 # Asociar cada imagen con un loop device disponible
-losetup -fP disk1.img
-losetup -fP disk2.img
-losetup -fP disk3.img
+losetup -fP disk11.img
+losetup -fP disk12.img
+losetup -fP disk13.img
 
 # Confirmar la asociación
 losetup -a
 
 # Formatear cada imagen 
-mkfs.ext4 disk1.img
-mkfs.ext4 disk2.img
-mkfs.ext4 disk3.img
+mkfs.ext4 disk11.img
+mkfs.ext4 disk12.img
+mkfs.ext4 disk13.img
 
 # Crear directorios de montaje
 mkdir -p /unam/bda/disks/d11
