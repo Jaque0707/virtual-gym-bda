@@ -33,7 +33,7 @@ CREATE TABLE cliente (
 TABLESPACE clientes_c1_data_ts                    -- filas de la tabla
 LOB (foto) STORE AS SECUREFILE 
   cliente_foto_lob (
-    TABLESPACE usuarios_c2_lob_ts                    -- segmento LOB de la foto
+    TABLESPACE operacion_c2_lob_ts                    -- segmento LOB de la foto
       INDEX cliente_foto_lob_ix
         TABLESPACE clientes_c1_data_ts              -- índice del LOB
 );
@@ -83,7 +83,7 @@ CREATE TABLE empleado (
 TABLESPACE operacion_c1_data_ts                     
 LOB (foto) STORE AS SECUREFILE 
   empleado_foto_lob (
-    TABLESPACE usuarios_c2_lob_ts                   
+    TABLESPACE operacion_c2_lob_ts                   
     INDEX empleado_foto_lob_ix
       TABLESPACE operacion_c1_data_ts              
 );
