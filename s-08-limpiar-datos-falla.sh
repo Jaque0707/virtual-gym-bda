@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Autor: Benítez Pérez Michelle Paulina
-#        Hernandez Garcia Pilar Jaquelin
+#        Hernández García Pilar Jaqueline
 # Fecha: 05/12/2025
 
 echo "Realizando limpieza en caso de ser necesario"
