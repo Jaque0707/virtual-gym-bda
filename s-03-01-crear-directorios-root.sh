@@ -11,32 +11,37 @@ set -e
 OWNER="oracle"
 GROUP="oinstall"
 
+cd /opt/oracle
+
 echo "Creando directorios para CDB..."
-if [ ! -d "/opt/oracle/oradata/FREE" ]; then
-  mkdir -p /opt/oracle/oradata/FREE
-  chown -R "$OWNER:$GROUP" /opt/oracle/oradata
-  chmod -R 750 /opt/oracle/oradata
+if [ ! -d "oradata/FREE" ]; then
+  mkdir -p oradata/FREE
+  chown -R "$OWNER:$GROUP" oradata
+  chmod -R 750 oradata
 else
   echo "El directorio /opt/oracle/oradata/FREE ya existe. No se realiza ninguna acción."
 fi
 
+cd /opt/oracle/oradata/FREE
+
 echo "Creando directorios para PDB..."
-if [ ! -d "/opt/oracle/oradata/FREE/pdbseed" ]; then
-  mkdir -p /opt/oracle/oradata/FREE/pdbseed
-  chown "$OWNER:$GROUP" /opt/oracle/oradata/FREE/pdbseed
-  chmod 750 /opt/oracle/oradata/FREE/pdbseed
+if [ ! -d "pdbseed" ]; then
+  mkdir -p pdbseed
+  chown "$OWNER:$GROUP" pdbseed
+  chmod 750 pdbseed
 else
   echo "El directorio /opt/oracle/oradata/FREE/pdbseed ya existe. No se realiza ninguna acción."
 fi
 
 echo "Creando directorios para control files y Redo Logs..."
+cd /unam/bda/pf/c0
 for i in d11 d12 d13; do
-  if [ ! -d "/unam/bda/disks/$i/app/oracle/oradata/FREE" ]; then
-    mkdir -p /unam/bda/disks/$i/app/oracle/oradata/FREE
-    chown -R "$OWNER:$GROUP" /unam/bda/disks/$i/app/oracle/oradata
-    chmod -R 750 /unam/bda/disks/$i/app/oracle/oradata
+  if [ ! -d "$i/app/oracle/oradata/FREE" ]; then
+    mkdir -p $i/app/oracle/oradata/FREE
+    chown -R "$OWNER:$GROUP" $i/app/oracle/oradata
+    chmod -R 750 $i/app/oracle/oradata
   else
-    echo "El directorio /unam/bda/disks/$i/app/oracle/oradata/FREE ya existe. No se realiza ninguna acción."
+    echo "El directorio /unam/bda/pf/c0/$i/app/oracle/oradata/FREE ya existe. No se realiza ninguna acción."
   fi
 done
 
