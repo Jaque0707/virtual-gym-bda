@@ -51,7 +51,10 @@ ALTER USER sys_km QUOTA UNLIMITED ON sensibles_c2_lob_ts;
 
 
 ------Usuarios de aplicacion
-CREATE USER admin_cliente IDENTIFIED BY system3;
+CREATE USER admin_cliente 
+IDENTIFIED BY system3
+DEFAULT TABLESPACE cliente_c1_data_ts;
+
 GRANT CREATE SESSION, CREATE TABLE, CREATE SEQUENCE, CREATE VIEW, CREATE PROCEDURE, CREATE TRIGGER TO sys_admin;
 GRANT SYSDBA TO sys_admin;
 
