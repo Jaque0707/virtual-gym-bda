@@ -2,8 +2,8 @@
 # ======================================================
 # Script: s-03-01-crear-directorios-root.sh
 # Autor: Benítez Pérez Michelle Paulina
-#        Hernandez Garcia Pilar Jaquelin
-# Fecha: 05/12/2025
+#        Hernández García Pilar Jaqueline
+# Fecha: 07/12/2025
 # Descripción: Creación de directorios para Datafiles, Redo Logs, Archivelogs, FRA.
 # ======================================================
 set -e
