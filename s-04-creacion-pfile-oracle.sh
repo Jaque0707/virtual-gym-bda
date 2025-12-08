@@ -32,7 +32,7 @@ open_cursors=300
 diagnostic_dest=/unam/bda/disks/d11
 log_archive_max_processes=2
 log_archive_format=arch_%t_%s_%r.arc
-log_archive_dest_1='LOCATION=/unam/bda/archivelogs/FREE/disk_a MANDATORY'
+log_archive_dest_1='LOCATION=/unam/bda/pf/c3/archivelogs/FREE/disk_a MANDATORY'
 log_archive_dest_2='LOCATION=USE_DB_RECOVERY_FILE_DEST'
 log_archive_min_succeed_dest=1
 log_archive_trace=12

@@ -55,24 +55,25 @@ else
 fi
 
 echo "Creando directorios para Archivelogs..."
-BASE_DIR="/unam/bda/archivelogs/FREE"
+BASE_DIR="/unam/bda/pf/c3/archivelogs/FREE"
 DIR_A="${BASE_DIR}/disk_a"
 DIR_B="${BASE_DIR}/disk_b"
 
 if [ ! -d "$DIR_A" ]; then
   mkdir -p "$DIR_A"
-  chown -R "$OWNER:$GROUP" /unam/bda/archivelogs
-  chmod -R 750 /unam/bda/archivelogs
+  chown -R "$OWNER:$GROUP" /unam/bda/pf/c3/archivelogs
+  chmod -R 750 /unam/bda/pf/c3/archivelogs
 else
   echo "El directorio $DIR_A ya existe. No se realiza ninguna acción."
 fi
 
 if [ ! -d "$DIR_B" ]; then
   mkdir -p "$DIR_B"
-  chown -R "$OWNER:$GROUP" /unam/bda/archivelogs
-  chmod -R 750 /unam/bda/archivelogs
+  chown -R "$OWNER:$GROUP" /unam/bda/pf/c3/archivelogs
+  chmod -R 750 /unam/bda/pf/c3/archivelogs
 else
   echo "El directorio $DIR_B ya existe. No se realiza ninguna acción."
 fi
 
 echo "Estructura creada correctamente con propietario $OWNER:$GROUP y permisos seguros."
+
