@@ -16,6 +16,10 @@ show parameter control_files
 
 prompt Modificando parámetro control_files
 
+-- ===================================================================
+-- IMPORTANTE: REVISAR LA RUTA y el NOMBRE DEL ARCHIVO
+-- ===================================================================
+
 alter system set
 control_files='/unam/bda/disks/d14/fra/FREE/controlfile/o1_mf_nmfmw641_.ctl',
 '/unam/bda/pf/c0/d11/app/oracle/oradata/FREE/control01.ctl',
