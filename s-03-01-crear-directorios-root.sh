@@ -77,3 +77,29 @@ fi
 
 echo "Estructura creada correctamente con propietario $OWNER:$GROUP y permisos seguros."
 
+
+# directorios para datafiles - capas de almacenamiento
+
+cd /unam/bda/pf
+
+echo "Creando directorios para datafiles en c1"
+if [ -d "c1" ]; then 
+  echo "El directorio ya existe"
+else
+  mkdir -p c1
+  chown -R root:root c1
+  chmod -R 755 c1
+  echo "Directorio creado"
+fi;
+
+cd /unam/bda/pf
+
+echo "Creando directorios para datafiles en c2"
+if [ -d "c2" ]; then 
+  echo "El directorio ya existe"
+else
+  mkdir -p c2
+  chown -R root:root c2
+  chmod -R 755 c2
+  echo "Directorio creado"
+fi;
