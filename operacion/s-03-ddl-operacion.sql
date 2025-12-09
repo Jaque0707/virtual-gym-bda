@@ -49,6 +49,9 @@ CREATE TABLE sensor (
       TABLESPACE cliente_c1_data_ts ,
   CONSTRAINT sensor_fecha_compra_chk
     CHECK (fecha_compra <= SYSDATE),
+ CONSTRAINT sensor_cliente_id_uk unique(cliente_id)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts            ,
   CONSTRAINT sensor_numero_serie_uk unique(numero_serie)
     USING INDEX
       TABLESPACE cliente_c1_data_ts            
@@ -138,60 +141,6 @@ LOB (foto) STORE AS SECUREFILE
       TABLESPACE operacion_c1_data_ts              
 );
 
-CREATE TABLE sesion (
-  sesion_id                NUMBER(12)   GENERATED ALWAYS AS IDENTITY,
-  folio                    NUMBER(12)  NOT NULL,
-  cliente_id               NUMBER(12)   NOT NULL,
-  duracion_minutos         NUMBER(5,2)  NOT NULL,
-  fecha_inicio             DATE         NOT NULL,
-  sala_id_rid              NUMBER(12)   NOT NULL,
-  empleado_instructor_id   NUMBER(12)   NOT NULL,
-  CONSTRAINT pk_sesion PRIMARY KEY (sesion_id)
-    USING INDEX
-      TABLESPACE operacion_c1_data_ts,
-  CONSTRAINT sesion_folio_chk
-    CHECK (folio > 0),
-  CONSTRAINT sesion_duracion_minutos_chk
-    CHECK (duracion_minutos > 0),
-  CONSTRAINT sesion_fecha_inicio_chk
-    CHECK (fecha_inicio <= SYSDATE),
-  CONSTRAINT sesion_folio_uk unique(folio); 
-    USING INDEX
-      TABLESPACE operacion_c1_data_ts            
-)
-TABLESPACE operacion_c1_data_ts;   
-
-CREATE TABLE bitacora (
-  bitacora_id NUMBER(12) GENERATED ALWAYS AS IDENTITY,
-  calorias    NUMBER(10,2) NOT NULL,
-  minuto      NUMBER(3),
-  sesion_id   NUMBER(12) NOT NULL,
-  CONSTRAINT pk_bitacora PRIMARY KEY (bitacora_id)
-    USING INDEX
-      TABLESPACE operacion_c1_data_ts            
-)
-TABLESPACE operacion_c1_data_ts;
-
-
-
-CREATE TABLE huella_dactilar (
-  huella_id       NUMBER(12) GENERATED ALWAYS AS IDENTITY,
-  empleado_id     NUMBER(12)  NOT NULL,
-  num_dedo        NUMBER(12)  NOT NULL,
-  huella_dactilar BLOB         NOT NULL,
-  CONSTRAINT pk_huella_dactilar PRIMARY KEY (huella_id)
-    USING INDEX
-      TABLESPACE operacion_c1_data_ts,
-  CONSTRAINT huella_dactilar_num_dedo_chk
-    CHECK (num_dedo BETWEEN 1 AND 12)
-)
-TABLESPACE operacion_c1_data_ts
-LOB (huella_dactilar) STORE AS SECUREFILE huella_dactilar_lob (
-  TABLESPACE sensibles_c2_lob_ts       
-  INDEX huella_dactilar_lob_ix
-    TABLESPACE operacion_c1_data_ts
-);
-
 CREATE TABLE instructor (
   empleado_id        NUMBER(12)  NOT NULL,
   suplente_id        NUMBER(12)  NOT NULL,
@@ -226,6 +175,59 @@ LOB (certificado_digital) STORE AS SECUREFILE administrativo_cert_lob (
     INDEX administrativo_cert_lob_ix
       TABLESPACE operacion_c1_data_ts
 );
+
+CREATE TABLE huella_dactilar (
+  huella_id       NUMBER(12) GENERATED ALWAYS AS IDENTITY,
+  empleado_id     NUMBER(12)  NOT NULL,
+  num_dedo        NUMBER(12)  NOT NULL,
+  huella_dactilar BLOB         NOT NULL,
+  CONSTRAINT pk_huella_dactilar PRIMARY KEY (huella_id)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts,
+  CONSTRAINT huella_dactilar_num_dedo_chk
+    CHECK (num_dedo BETWEEN 1 AND 12)
+)
+TABLESPACE operacion_c1_data_ts
+LOB (huella_dactilar) STORE AS SECUREFILE huella_dactilar_lob (
+  TABLESPACE sensibles_c2_lob_ts       
+  INDEX huella_dactilar_lob_ix
+    TABLESPACE operacion_c1_data_ts
+);
+
+CREATE TABLE sesion (
+  sesion_id                NUMBER(12)   GENERATED ALWAYS AS IDENTITY,
+  folio                    NUMBER(12)  NOT NULL,
+  cliente_id               NUMBER(12)   NOT NULL,
+  duracion_minutos         NUMBER(5,2)  NOT NULL,
+  fecha_inicio             DATE         NOT NULL,
+  sala_id_rid              NUMBER(12)   NOT NULL,
+  empleado_instructor_id   NUMBER(12)   NOT NULL,
+  CONSTRAINT pk_sesion PRIMARY KEY (sesion_id)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts,
+  CONSTRAINT sesion_folio_chk
+    CHECK (folio > 0),
+  CONSTRAINT sesion_duracion_minutos_chk
+    CHECK (duracion_minutos > 0),
+  CONSTRAINT sesion_fecha_inicio_chk
+    CHECK (fecha_inicio <= SYSDATE),
+  CONSTRAINT sesion_folio_uk unique(folio); 
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts            
+)
+TABLESPACE operacion_c1_data_ts;   
+
+CREATE TABLE bitacora (
+  bitacora_id NUMBER(12) GENERATED ALWAYS AS IDENTITY,
+  calorias    NUMBER(10,2) NOT NULL,
+  minuto      NUMBER(3),
+  sesion_id   NUMBER(12) NOT NULL,
+  CONSTRAINT pk_bitacora PRIMARY KEY (bitacora_id)
+    USING INDEX
+      TABLESPACE operacion_c1_data_ts            
+)
+TABLESPACE operacion_c1_data_ts;
+
 
 CREATE TABLE sesion_aparato (
   sesion_aparato_id NUMBER(12) GENERATED ALWAYS AS IDENTITY,

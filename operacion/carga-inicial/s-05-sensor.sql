@@ -3,22 +3,17 @@
 CREATE OR REPLACE DIRECTORY CLIENTE_DIR AS '/unam/bda/virtual-gym-bda/operacion/carga-inicial';
 GRANT READ, WRITE ON DIRECTORY CLIENTE_DIR TO admin_cliente; -- o tu usuario
 
-create or replace procedure carga_clientes is 
+create or replace procedure carga_sensor is 
   v_file   UTL_FILE.FILE_TYPE;
   v_line   VARCHAR2(32767);
   v_is_first_line BOOLEAN := TRUE;
 
   -- columnas
-  v_nombre           VARCHAR2(40);
-  v_ap_paterno       VARCHAR2(40);
-  v_ap_materno       VARCHAR2(40);
-  v_email            VARCHAR2(200);
-  v_username         VARCHAR2(40);
-  v_password         VARCHAR2(40);
-  v_direccion        VARCHAR2(200);
-  v_fecha_txt        VARCHAR2(20);
-  v_curp_txt         VARCHAR2(30);
-  v_foto_txt         VARCHAR2(200);
+  v_id           VARCHAR2(50); 
+  v_num_serie    VARCHAR2(50); 
+  v_fecha_compra VARCHAR2(50); 
+  v_marca        VARCHAR2(50); 
+  v_cliente_id   VARCHAR2(50); 
 
   -- función auxiliar para obtener la n-ésima columna separada por coma
   FUNCTION get_col(p_line IN VARCHAR2, p_pos IN PLS_INTEGER)

@@ -34,9 +34,9 @@ BEGIN
     DBMS_LOB.FILEOPEN(v_bfile, DBMS_LOB.FILE_READONLY);
 
     -- lee los bytes del archivo y los escribe en la columna foto para el
-    -- id del foto del cliente en turno. Notar que para cargar archivos grandes debe 
-    -- realizarse por partes. Para efectos de esta práctica se asume 
-    -- que las fotos son pequeñas y caben en una sola operación.
+    -- id del foto del cliente en turno. 
+    -- Para cargar archivos grandes debe 
+    -- realizarse por partes. 
     dbms_lob.loadfromfile(
         dest_lob => v_blob,
         src_lob  => v_bfile,
@@ -51,8 +51,17 @@ BEGIN
     end if;
     --cerrar el archivo del s.o.
     dbms_lob.fileclose(v_bfile);
-
-
   END LOOP;
 END;
 /
+show errors
+prompt ==> Realizando carga de fotos de clientes
+begin
+  carga_img_cliente;
+end;
+/
+prompt ==> Carga de fotos de clientes finalizada, confirmando cambios.
+commit; 
+prompt ==> Total de datos cargados en fotos:
+select round(sum(dbms_lob.getlength(foto))/1024/1024,2) as total_mb_fotos
+from cliente;
