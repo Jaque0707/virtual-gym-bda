@@ -3,6 +3,8 @@
 --@Fecha creación: 08/12/2025
 --@Descripción: 
 
+connect sys/systemP@pf_infraestr as sysdba
+
 -- 1. Tablespace para Datos Operativos (Capa 1)
 -- Almacena tablas como: gimnasio, sala, aparato, disciplina
 CREATE TABLESPACE infra_c1_data_ts
@@ -22,7 +24,7 @@ CREATE TABLESPACE infra_c1_ix_ts
     SEGMENT SPACE MANAGEMENT AUTO;
 
 -- 3. Tablespace para Multimedia (Capa 2)
--- Almacena datos BLOB pesados (videos/imágenes) con menor frecuencia de acceso (Warn/Cold)
+-- Almacena datos BLOB pesados (videos/imágenes) con menor frecuencia de acceso 
 CREATE TABLESPACE infra_c2_lob_ts
     DATAFILE '/unam/bda/pf/c2/d03/infra_c2_lob_ts.dbf' 
     SIZE 100M
