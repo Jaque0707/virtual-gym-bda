@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  TABLAS BASE
 --------------------------------------------------------
-
+-- CLIENTE------------------------------------------------------------------------
 CREATE TABLE cliente (
   cliente_id        NUMBER(12) GENERATED ALWAYS AS IDENTITY,
   nombre            VARCHAR2(40)  NOT NULL,
@@ -38,6 +38,56 @@ LOB (foto) STORE AS SECUREFILE
         TABLESPACE clientes_c1_data_ts              -- índice del LOB
 );
 
+CREATE TABLE sensor (
+  sensor_id     NUMBER(12) GENERATED ALWAYS AS IDENTITY,
+  numero_serie  VARCHAR2(20)  NOT NULL,
+  fecha_compra  DATE          NOT NULL,
+  marca         VARCHAR2(40)  NOT NULL,
+  cliente_id    NUMBER(12)  NOT NULL,
+  CONSTRAINT pk_sensor PRIMARY KEY (sensor_id)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts ,
+  CONSTRAINT sensor_fecha_compra_chk
+    CHECK (fecha_compra <= SYSDATE),
+  CONSTRAINT sensor_numero_serie_uk unique(numero_serie)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts            
+)
+TABLESPACE cliente_c1_data_ts;
+
+CREATE TABLE credencial (
+  credencial_id    NUMBER(12)    GENERATED ALWAYS AS IDENTITY,
+  folio            VARCHAR2(20)  NOT NULL,
+  fecha_expedicion DATE          DEFAULT SYSDATE NOT NULL,
+  vigencia         DATE          NOT NULL,
+  codigo_barras    VARCHAR2(20),
+  cliente_id       NUMBER(12)    NOT NULL,
+  CONSTRAINT pk_credencial PRIMARY KEY (credencial_id)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts,
+  CONSTRAINT credencial_folio_uk unique(folio)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts,
+  CONSTRAINT credencial_codigo_barras_uk unique(codigo_barras)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts            
+)
+TABLESPACE cleinte_c1_data_ts; 
+
+CREATE TABLE registro_medidas (
+  registro_medidas_id      NUMBER(12) GENERATED ALWAYS AS IDENTITY,
+  fecha_registro   DATE         NOT NULL,
+  masa_corporal    NUMBER(5,2)  NOT NULL,
+  estatura         NUMBER(4,2),
+  peso             NUMBER(5,2)  NOT NULL,
+  cliente_id       NUMBER(12) NOT NULL,
+  CONSTRAINT pk_registro_medidas PRIMARY KEY (registro_medidas_id)
+    USING INDEX
+      TABLESPACE cliente_c1_data_ts            
+)
+TABLESPACE cliente_c1_data_ts;
+
+--Operacion----------------------------------------------------------------------
 CREATE TABLE puesto (
   puesto_id   NUMBER(12) GENERATED ALWAYS AS IDENTITY,
   clave       VARCHAR2(5)    NOT NULL,
@@ -88,23 +138,6 @@ LOB (foto) STORE AS SECUREFILE
       TABLESPACE operacion_c1_data_ts              
 );
 
-CREATE TABLE sensor (
-  sensor_id     NUMBER(12) GENERATED ALWAYS AS IDENTITY,
-  numero_serie  VARCHAR2(20)  NOT NULL,
-  fecha_compra  DATE          NOT NULL,
-  marca         VARCHAR2(40)  NOT NULL,
-  cliente_id    NUMBER(12)  NOT NULL,
-  CONSTRAINT pk_sensor PRIMARY KEY (sensor_id)
-    USING INDEX
-      TABLESPACE cliente_c1_data_ts ,
-  CONSTRAINT sensor_fecha_compra_chk
-    CHECK (fecha_compra <= SYSDATE),
-  CONSTRAINT sensor_numero_serie_uk unique(numero_serie)
-    USING INDEX
-      TABLESPACE cliente_c1_data_ts            
-)
-TABLESPACE cliente_c1_data_ts; 
-
 CREATE TABLE sesion (
   sesion_id                NUMBER(12)   GENERATED ALWAYS AS IDENTITY,
   folio                    NUMBER(12)  NOT NULL,
@@ -139,22 +172,7 @@ CREATE TABLE bitacora (
 )
 TABLESPACE operacion_c1_data_ts;
 
-CREATE TABLE credencial (
-  credencial_id    NUMBER(12)    GENERATED ALWAYS AS IDENTITY,
-  folio            VARCHAR2(20)  NOT NULL,
-  fecha_expedicion DATE          DEFAULT SYSDATE NOT NULL,
-  vigencia         DATE          NOT NULL,
-  codigo_barras    VARCHAR2(20),
-  cliente_id       NUMBER(12)    NOT NULL,
-  CONSTRAINT pk_credencial PRIMARY KEY (credencial_id)
-    USING INDEX
-      TABLESPACE cliente_c1_data_ts,
-  CONSTRAINT credencial_folio_uk unique(folio),
-  CONSTRAINT credencial_codigo_barras_uk unique(codigo_barras)
-    USING INDEX
-      TABLESPACE cliente_c1_data_ts            
-)
-TABLESPACE cleinte_c1_data_ts;  
+
 
 CREATE TABLE huella_dactilar (
   huella_id       NUMBER(12) GENERATED ALWAYS AS IDENTITY,
@@ -219,18 +237,7 @@ CREATE TABLE sesion_aparato (
 )
 TABLESPACE operacion_c1_data_ts;
 
-CREATE TABLE registro_medidas (
-  registro_medidas_id      NUMBER(12) GENERATED ALWAYS AS IDENTITY,
-  fecha_registro   DATE         NOT NULL,
-  masa_corporal    NUMBER(5,2)  NOT NULL,
-  estatura         NUMBER(4,2),
-  peso             NUMBER(5,2)  NOT NULL,
-  cliente_id       NUMBER(12) NOT NULL,
-  CONSTRAINT pk_registro_medidas PRIMARY KEY (registro_medidas_id)
-    USING INDEX
-      TABLESPACE cliente_c1_data_ts            
-)
-TABLESPACE cliente_c1_data_ts;
+
 --------------------------------------------------------
 --  FOREIGN KEYS
 --------------------------------------------------------

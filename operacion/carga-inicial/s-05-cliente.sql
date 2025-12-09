@@ -40,10 +40,10 @@ BEGIN
     END;
 
     -- saltar encabezado (primera línea)
-    IF v_is_first_line THEN
-      v_is_first_line := FALSE;
-      CONTINUE;
-    END IF;
+    --IF v_is_first_line THEN
+      --v_is_first_line := FALSE;
+      --CONTINUE;
+    --END IF;
 
     -- extraer columnas
     v_nombre      := get_col(v_line, 1);
@@ -81,8 +81,7 @@ BEGIN
       EMPTY_BLOB()  -- BLOB inicial
     );
   END LOOP;
-
   UTL_FILE.FCLOSE(v_file);
-  COMMIT;
+
 END;
 /
