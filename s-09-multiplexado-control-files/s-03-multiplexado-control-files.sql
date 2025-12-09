@@ -29,8 +29,8 @@ scope =spfile;
 shutdown abort
 
 startup nomount
-alter database mount
-alter database open
+alter database mount;
+alter database open;
 
 prompt Revisar 3 rutas en parámetro control_files
 
