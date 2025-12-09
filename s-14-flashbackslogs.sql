@@ -9,10 +9,10 @@ connect sys/systemP as sysdba
 shutdown immediate;
 startup mount;
 
-alter database archivelog;
+alter database flashback on;
 
 alter database open;
 
 prompt Revisar la configuración
 
-archive log list
+SELECT flashback_on FROM v$database;
