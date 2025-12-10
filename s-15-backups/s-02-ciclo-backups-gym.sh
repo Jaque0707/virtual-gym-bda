@@ -129,13 +129,13 @@ RUN {
 }
 EOF
 
-echo "--> VIERNES: Punto de Consulta / Verificación [9]"
-rman $SYS_RMAN << EOF
-    # Verificación del estado de recuperación antes del fin de semana
-    RESTORE DATABASE PREVIEW;
-    # Reporte de obsolescencia
-    REPORT OBSOLETE;
-EOF
+#echo "--> VIERNES: Punto de Consulta / Verificación "
+#rman $SYS_RMAN << EOF
+#    # Verificación del estado de recuperación antes del fin de semana
+#    RESTORE DATABASE PREVIEW;
+#    # Reporte de obsolescencia
+#    REPORT OBSOLETE;
+#EOF
 
 #echo "--> VIERNES: Simulando Carga Moderada (400 registros)" # CAMBIAR
 #sqlplus -s $USER_BD << EOF
