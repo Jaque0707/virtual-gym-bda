@@ -4,7 +4,7 @@
 --@Descripción: 
 
 create pluggable database pf_infraestr
-admin user infraestr_admin identified by infraestr_admin
+admin user infra_admin identified by infra_admin
 path_prefix = '/opt/oracle/oradata/FREE'
 file_name_convert = ('/pdbseed/', '/pf_infraestr/');
 
