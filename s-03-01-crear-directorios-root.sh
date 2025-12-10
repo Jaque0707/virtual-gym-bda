@@ -103,3 +103,17 @@ else
   chmod -R 755 c2
   echo "Directorio creado"
 fi;
+
+
+# directorio para archivo de rastreo rman 
+cd /unam/bda/pf/c0
+
+echo "Creando directorio para archivo de rastreo rman"
+if [ -d "d10/block-tracking" ]; then 
+  echo "El directorio ya existe"
+else
+  mkdir -p d10/block-tracking
+  chown -R oracle:oinstall d10/block-tracking
+  chmod -R 755 d10/block-tracking
+  echo "Directorio creado"
+fi;
