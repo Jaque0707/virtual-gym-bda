@@ -1,0 +1,51 @@
+CLAVE,NOMBRE,CAPACIDAD_MAXIMA,GIMNASIO_ID,EMPLEADO_RESPONSABLE_RID
+S-24,Vestuarios,9,2,36
+S-15,Recepción,9,3,27
+S-16,Sala de Actividades Dirigidas,8,5,47
+S-75,Estudio de Yoga y Pilates,10,5,27
+S-79,Sala de Actividades Dirigidas,24,1,28
+S-22,Sala de Cardio,12,1,28
+S-93,Vestuarios,10,4,43
+S-68,Recepción,8,1,38
+S-57,Estudio de Yoga y Pilates,10,1,25
+S-66,Sala de Musculación,11,1,29
+S-14,Vestuarios,27,3,36
+S-76,Área de Entrenamiento Funcional,14,3,43
+S-97,Sala de Musculación,8,4,49
+S-14,Sala de Musculación,13,2,29
+S-44,Sala de Musculación,28,4,32
+S-87,Zona de Peso Libre,15,4,50
+S-16,Sala de Spinning,9,5,41
+S-08,Sala de Cardio,26,5,43
+S-01,Sala de Actividades Dirigidas,5,3,30
+S-06,Sala de Musculación,29,5,45
+S-83,Estudio de Yoga y Pilates,22,2,26
+S-83,Sala de Actividades Dirigidas,16,5,40
+S-39,Sala de Spinning,27,3,30
+S-69,Vestuarios,20,1,33
+S-89,Sala de Musculación,13,5,46
+S-45,Área de Entrenamiento Funcional,8,5,38
+S-01,Estudio de Yoga y Pilates,26,1,45
+S-34,Sala de Spinning,30,2,46
+S-55,Área de Entrenamiento Funcional,21,2,30
+S-12,Sala de Actividades Dirigidas,7,3,29
+S-45,Sala de Actividades Dirigidas,5,1,41
+S-07,Sala de Musculación,8,3,47
+S-43,Estudio de Yoga y Pilates,8,4,27
+S-23,Área de Entrenamiento Funcional,29,1,40
+S-36,Sala de Musculación,29,4,50
+S-12,Sala de Spinning,6,5,48
+S-34,Estudio de Yoga y Pilates,6,2,50
+S-39,Zona de Peso Libre,11,2,35
+S-21,Sala de Actividades Dirigidas,21,1,28
+S-99,Sala de Spinning,24,4,35
+S-89,Sala de Musculación,20,3,45
+S-57,Sala de Musculación,6,4,25
+S-10,Sala de Spinning,12,3,47
+S-42,Sala de Spinning,30,1,41
+S-62,Sala de Actividades Dirigidas,12,3,25
+S-49,Recepción,21,5,46
+S-47,Recepción,23,4,29
+S-42,Sala de Cardio,18,4,31
+S-55,Recepción,9,2,33
+S-73,Sala de Cardio,21,3,25
