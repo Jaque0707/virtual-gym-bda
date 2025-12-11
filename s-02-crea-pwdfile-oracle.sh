@@ -23,12 +23,12 @@ if [ -f "${archivoPwd}" ]; then
   exit 2
 fi;
 
-echo "Generando un archivo de passwords nuevo, proporcionar el password de SYS a Hola1234*"
+echo "Generando un archivo de passwords nuevo, proporcionar el password de SYS a Med1aStream*"
 
 # Cambiar las comillas simples a dobles para que la variable se expanda correctamente
 /opt/oracle/product/23ai/dbhomeFree/bin/orapwd FILE="/opt/oracle/product/23ai/dbhomeFree/dbs/orapwfree" \
 FORMAT=12.2 \
-SYS=password password=Hola1234*
+SYS=password password=Med1aStream*
 
 echo "validando la existencia del nuevo archivo"
 if [ -f "${archivoPwd}" ]; then
