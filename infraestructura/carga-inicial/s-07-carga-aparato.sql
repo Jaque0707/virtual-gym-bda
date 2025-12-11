@@ -70,3 +70,8 @@ begin
   UTL_FILE.FCLOSE(v_file);
 END;
 /
+
+begin
+  carga_aparato;
+end;
+/
