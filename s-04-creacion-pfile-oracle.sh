@@ -11,7 +11,7 @@
 echo "Creando archivo de parametros"
 
 export ORACLE_SID=free
-pfile=$ORACLE_HOME/dbs/init${ORACLE_SID}.ora
+pfile=${ORACLE_HOME}/dbs/init${ORACLE_SID}.ora
 
 if [ -f "${pfile}" ]; then
   read -p "El archivo ${pfile} ya existe, [Enter] para sobrescribir"
