@@ -1,9 +1,12 @@
+connect sys/systemP@pf_operacion as sysdba
+
+
 -- **************Llaves foraneas********************
 
 --EMPLEADO 
 create index empleado_puesto_id_ix
 on empleado(puesto_id)
-TABLESPACE operacion_c1_data_ts;
+TABLESPACE empleado_c1_data_ts;
 
 --PUESTO
 create index sensor_cliente_id_ix 
@@ -18,6 +21,7 @@ TABLESPACE operacion_c1_data_ts;
 --BITACORA
 create index bitacora_sesion_id_ix 
 on bitacora(sesion_id)
+TABLESPACE operacion_c1_data_ts;
 
 --CREDENCIAL 
 create index credencial_cliente_id_ix
@@ -30,7 +34,7 @@ TABLESPACE cliente_c1_data_ts;
 --INSTRUCTOR 
 create index instructor_suplente_id_ix 
 on instructor(suplente_id)
-TABLESPACE operacion_c1_data_ts;
+TABLESPACE empleado_c1_data_ts;
 
 --ADMINISTRATIVo 
 --N/A
@@ -57,7 +61,7 @@ TABLESPACE cliente_c1_data_ts;
 -- EMPLEADO 
 create index empleado_nombre_completo_ix
 on empleado(apellido_paterno, apellido_materno, nombre)
-TABLESPACE operacion_c1_data_ts;
+TABLESPACE empleado_c1_data_ts;
 
 --SESION 
 create index sesion_cliente_id_folio_ix
@@ -65,6 +69,6 @@ on (cliente_id, folio)
 TABLESPACE operacion_c1_data_ts;
 
 --HUELLA DACTILAR 
-create index huella_dactilar_huellas_ix 
+create index huella_dactilar_empleado_dedo_ix 
 on huella_dactilar(empleado_id, num_dedo)
-TABLESPACE operacion_c1_data_ts;
+TABLESPACE empleado_c1_data_ts;

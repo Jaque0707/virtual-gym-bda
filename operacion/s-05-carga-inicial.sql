@@ -1,5 +1,4 @@
---@Autor: Jorge Rodriguez
---@Fecha creación: dd/mm/yyyy
+
 --@Descripción: Archivo principal
 --si ocurre un error, se hace rollback de los datos y
 --se sale de SQL *Plus

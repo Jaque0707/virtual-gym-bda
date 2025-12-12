@@ -5,73 +5,69 @@
 -- Fecha: 08/Dec/2025
 -- Descripción: Creación de usuarios
 -- ======================================================
+connect sys/systemP@pf_operacion as sysdba
 
--- Adminsitradores
-
-CREATE USER sys_admin IDENTIFIED BY system3;
-GRANT CREATE SESSION, CREATE TABLE, CREATE SEQUENCE, CREATE VIEW, CREATE PROCEDURE, CREATE TRIGGER TO sys_admin;
-GRANT SYSDBA TO sys_admin;
+-- Usuario de Administración Total del Sistema
+create user sys_admin identified by operacion;
+grant create session, create table, create sequence, create view, create procedure, create trigger to sys_admin;
+grant sysdba to sys_admin;
 
 -- Asignar cuotas sobre todos los tablespaces relevantes
-ALTER USER sys_admin QUOTA UNLIMITED ON cliente_c1_data_ts; 
-ALTER USER sys_admin QUOTA UNLIMITED ON operacion_c1_data_ts; 
-ALTER USER sys_admin QUOTA UNLIMITED ON sensibles_c2_lob_ts; 
-ALTER USER sys_admin QUOTA UNLIMITED ON operacion_c2_lob_ts;  
+alter user sys_admin quota unlimited on clientes_c1_data_ts; 
+alter user sys_admin quota unlimited on clientes_c2_lob_ts; 
+alter user sys_admin quota unlimited on empleado_c1_data_ts;
+alter user sys_admin quota unlimited on empleado_c2_lob_ts; 
+alter user sys_admin quota unlimited on operacion_c1_data_ts; 
 
-CREATE USER sys_operator IDENTIFIED BY system3;
-GRANT CREATE SESSION, CREATE TABLE, CREATE SEQUENCE, CREATE VIEW TO sys_operator;
-GRANT SYSOPER TO sys_operator;
+-- Usuario de Operación del Sistema (ej. startup/shutdown)
+create user sys_operator identified by operacion;
+grant create session, create table, create sequence, create view to sys_operator;
+grant sysoper to sys_operator;
 
--- Asignar cuotas sobre los tablespaces relevantes
-ALTER USER sys_operator QUOTA UNLIMITED ON cliente_c1_data_ts;
-ALTER USER sys_operator QUOTA UNLIMITED ON operacion_c1_data_ts_01;
+-- Asignar cuotas (si fuera necesario para tareas de bajo nivel, aunque SYSOPER rara vez requiere cuotas)
+alter user sys_operator quota unlimited on clientes_c1_data_ts;
+alter user sys_operator quota unlimited on operacion_c1_data_ts;
 
-CREATE USER sys_backup IDENTIFIED BY system2;
-GRANT CREATE SESSION, CREATE TABLE, CREATE SEQUENCE, CREATE VIEW TO sys_backup;
-GRANT SYSBACKUP TO sys_backup;
+-- Usuario de Backup y Recuperación
+create user sys_backup identified by operacion;
+grant create session, create table, create sequence, create view to sys_backup;
+grant sysbackup to sys_backup;
 
-ALTER USER sys_admin QUOTA UNLIMITED ON cliente_c1_data_ts; 
-ALTER USER sys_admin QUOTA UNLIMITED ON operacion_c1_data_ts; 
-ALTER USER sys_admin QUOTA UNLIMITED ON sensibles_c2_lob_ts; 
-ALTER USER sys_admin QUOTA UNLIMITED ON operacion_c2_lob_ts;  
+-- Usuario de Data Guard
+create user sys_dg identified by operacion;
+grant create session, create table, create sequence, create view to sys_dg;
+grant sysdg to sys_dg;
 
+-- Usuario de Key Management (ej. TDE)
+create user sys_km identified by operacion;
+grant create session, create table, create sequence, create view to sys_km;
+grant syskm to sys_km;
 
-CREATE USER sys_dg IDENTIFIED BY  system3;
-GRANT CREATE SESSION, CREATE TABLE, CREATE SEQUENCE, CREATE VIEW TO sys_dg;
-GRANT SYSDG TO sys_dg;
+-----------------------------
+-- ADMINSITRACION DE CLIENTES 
+-----------------------------
+create user admin_cliente identified by admin_cliente default tablespace clientes_c1_data_ts;
 
-ALTER USER sys_dg QUOTA UNLIMITED ON sensibles_c2_lob_ts; 
+grant create session, create table, create sequence, create view, create procedure, create trigger, create type to admin_cliente;
 
+alter user admin_cliente quota unlimited on clientes_c1_data_ts;
+alter user admin_cliente quota unlimited on clientes_c2_lob_ts;
 
-CREATE USER sys_km IDENTIFIED BY system2;
-GRANT CREATE SESSION, CREATE TABLE, CREATE SEQUENCE, CREATE VIEW TO sys_km;
-GRANT SYSKM TO sys_km;
+------------------------------
+-- ADMINSITRACION DE EMPLEADOS 
+------------------------------
+create user admin_empleado identified by admin_empleado default tablespace empleado_c1_data_ts;
 
-ALTER USER sys_km QUOTA UNLIMITED ON sensibles_c2_lob_ts; 
+grant create session, create table, create sequence, create view, create procedure, create trigger, create type to admin_empleado;
 
+alter user admin_empleado quota unlimited on empleado_c1_data_ts;
+alter user admin_empleado quota unlimited on empleado_c2_lob_ts;
 
-------Usuarios de aplicacion
-CREATE USER admin_cliente 
-IDENTIFIED BY system3
-DEFAULT TABLESPACE cliente_c1_data_ts;
+------------------------------
+-- ADMINSITRACION DE OPERACION 
+------------------------------
+create user admin_operacion identified by admin_operacion_pass default tablespace operacion_c1_data_ts;
 
-GRANT CREATE SESSION, CREATE TABLE, CREATE SEQUENCE, CREATE VIEW, CREATE PROCEDURE, CREATE TRIGGER TO sys_admin;
-GRANT SYSDBA TO sys_admin;
+grant create session, create table, create sequence, create view, create procedure, create trigger, create type to admin_operacion;
 
-ALTER USER sys_admin QUOTA UNLIMITED ON cliente_c1_data_ts; 
-ALTER USER sys_admin QUOTA UNLIMITED ON operacion_c2_lob_ts;  
-
-CREATE USER admin_operacion
-  IDENTIFIED BY admin_operacion
-  DEFAULT TABLESPACE operacion_c1_data_ts
-  QUOTA UNLIMITED ON operacion_c1_data_ts
-  QUOTA UNLIMITED ON operacion_c2_lob_ts
-  QUOTA UNLIMITED ON sensibles_c2_lob_ts;
-
-GRANT CREATE SESSION TO admin_operacion;
-GRANT CREATE TABLE TO admin_operacion;
-GRANT CREATE SEQUENCE TO admin_operacion;
-GRANT CREATE VIEW TO admin_operacion;
-GRANT CREATE PROCEDURE TO admin_operacion;
-GRANT CREATE TRIGGER TO admin_operacion;
-GRANT CREATE TYPE TO admin_operacion;
+alter user admin_operacion quota unlimited on operacion_c1_data_ts;

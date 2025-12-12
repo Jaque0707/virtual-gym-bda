@@ -5,8 +5,10 @@
 -- Descripción: Creación de la pd operacion 
 -- ======================================================
 
+conn sys/systemP as sysdba
+
 create pluggable database pf_operacion
-admin user pf_operacion_admin identified by pf_operacion_admin
+admin user operacion_admin identified by admin
 path_prefix = '/opt/oracle/oradata/FREE'
 file_name_convert = ('/pdbseed/', '/pf_operacion/');
 
