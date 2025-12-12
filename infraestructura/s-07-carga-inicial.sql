@@ -30,6 +30,8 @@ prompt Ejecutar procedimientos
 @carga-inicial/s-03-carga-gimnasio
 @carga-inicial/s-04-carga-disciplina
 @carga-inicial/s-05-carga-archivo-multimedia
+@carga-inicial/s-06-carga-sala
+
 
 
 
