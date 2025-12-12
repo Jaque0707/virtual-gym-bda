@@ -1,24 +1,23 @@
--- Inserta en la tabla aparato
-create or replace procedure carga_aparato is
+-- Inserta en la tabla gimnasio
+create or replace procedure carga_gimnasio is
   v_file   UTL_FILE.FILE_TYPE;
   v_line   VARCHAR2(32767);
   v_is_first_line BOOLEAN := TRUE;
 
-  -- columnas (buffers grandes para evitar errores de tamaÃ±o)
-  v_1  VARCHAR2(500);
-  v_2  VARCHAR2(500);
-  v_3  VARCHAR2(500);
-  v_4  VARCHAR2(500);
-  v_5  VARCHAR2(2000);
-  v_6  VARCHAR2(500);
-  v_7  VARCHAR2(500);
-  v_8  VARCHAR2(500);
+  -- columnas
+  v_folio                VARCHAR2(500);
+  v_nombre               VARCHAR2(500);
+  v_direccion            VARCHAR2(500);
+  v_latitud              VARCHAR2(500);
+  v_longitud             VARCHAR2(500);
+  v_tel_principal        VARCHAR2(500);
+  v_pagina_web           VARCHAR2(500);
+  v_empleado_gerente_rid VARCHAR2(500);
 
   v_rows number;
-  v_query varchar2(500);
+  v_query varchar2(1000);
 
-  -- funciÃ³n auxiliar: parsea CSV respetando comillas
-  -- Retorna un array de campos
+  -- función auxiliar: parsea CSV respetando comillas
   type t_fields is table of VARCHAR2(32767) index by PLS_INTEGER;
 
   function parse_csv_line(p_line in VARCHAR2) return t_fields is
@@ -29,7 +28,7 @@ create or replace procedure carga_aparato is
     v_field_idx PLS_INTEGER := 1;
     v_len PLS_INTEGER := LENGTH(p_line);
   begin
-    -- Recorrer carÃ¡cter por carÃ¡cter
+    -- Recorrer carácter por carácter
     for i in 1..v_len loop
       v_char := SUBSTR(p_line, i, 1);
 
@@ -42,19 +41,18 @@ create or replace procedure carga_aparato is
         v_field_idx := v_field_idx + 1;
         v_field := '';
       else
-        -- Es un carÃ¡cter del campo actual
+        -- Es un carácter del campo actual
         v_field := v_field || v_char;
       end if;
     end loop;
 
-    -- Guardar el Ãºltimo campo
+    -- Guardar el último campo
     v_fields(v_field_idx) := v_field;
 
     return v_fields;
   end parse_csv_line;
 
-  -- FunciÃ³n para leer una lÃ­nea lÃ³gica completa del CSV
-  -- (puede abarcar mÃºltiples lÃ­neas fÃ­sicas si hay saltos dentro de comillas)
+  -- Función para leer una línea lógica completa del CSV
   function read_csv_record(p_file in out UTL_FILE.FILE_TYPE) return VARCHAR2 is
     v_buffer VARCHAR2(32767);
     v_record VARCHAR2(32767) := '';
@@ -66,7 +64,7 @@ create or replace procedure carga_aparato is
       exception
         when NO_DATA_FOUND then
           if LENGTH(v_record) > 0 then
-            -- Limpiar y retornar el Ãºltimo registro
+            -- Limpiar y retornar el último registro
             v_record := REPLACE(v_record, CHR(13), '');
             v_record := REPLACE(v_record, CHR(10), '');
             return v_record;
@@ -75,13 +73,13 @@ create or replace procedure carga_aparato is
           end if;
       end;
 
-      -- Limpiar caracteres de control de la lÃ­nea
+      -- Limpiar caracteres de control de la línea
       v_buffer := REPLACE(v_buffer, CHR(13), '');
       v_buffer := REPLACE(v_buffer, CHR(10), '');
 
-      -- Agregar la lÃ­nea al registro actual
+      -- Agregar la línea al registro actual
       if LENGTH(v_record) > 0 then
-        v_record := v_record || ' ' || v_buffer;  -- Espacio en lugar de salto
+        v_record := v_record || ' ' || v_buffer;
       else
         v_record := v_buffer;
       end if;
@@ -94,7 +92,7 @@ create or replace procedure carga_aparato is
         end if;
       end loop;
 
-      -- Si el nÃºmero de comillas es par, la lÃ­nea lÃ³gica estÃ¡ completa
+      -- Si el número de comillas es par, la línea lógica está completa
       if MOD(v_quote_count, 2) = 0 then
         return v_record;
       end if;
@@ -105,71 +103,70 @@ create or replace procedure carga_aparato is
 
 begin
   -- 1. Iniciamos las variables
-    v_rows := 100;
-    v_query :='insert into aparato(NUMERO_INVENTARIO,NOMBRE,FECHA_ADQUISICION,FECHA_STATUS,DESCRIPCION,SALA_ID,TIPO_APARATO_ID,STATUS_APARATO_ID) values (:ph1,:ph2,:ph3,:ph4,:ph5,:ph6,:ph7,:ph8)';
+  v_rows := 100;
+  v_query := 'insert into gimnasio(FOLIO,NOMBRE,DIRECCION,LATITUD,LONGITUD,TEL_PRINCIPAL,PAGINA_WEB,EMPLEADO_GERENTE_RID) values (:ph1,:ph2,:ph3,:ph4,:ph5,:ph6,:ph7,:ph8)';
 
   -- 2. Abre el archivo en modo lectura
-  v_file := UTL_FILE.FOPEN('INFRA_DIR', 'aparato.csv', 'R', 32767);
+  v_file := UTL_FILE.FOPEN('INFRA_DIR', 'gimnasio.csv', 'R', 32767);
 
   loop
-    -- 3. Lee un registro completo del CSV (puede ser multi-lÃ­nea)
+    -- 3. Lee un registro completo del CSV
     v_line := read_csv_record(v_file);
 
     exit when v_line IS NULL;
 
-    -- 4. Saltar encabezado (primera lÃ­nea)
+    -- 4. Saltar encabezado (primera línea)
     if v_is_first_line then
       v_is_first_line := FALSE;
       continue;
     end if;
 
-    -- 5. Parsear la lÃ­nea CSV
+    -- 5. Parsear la línea CSV
     declare
       v_fields t_fields;
       v_field_count PLS_INTEGER;
     begin
       v_fields := parse_csv_line(v_line);
 
-      -- Contar cuÃ¡ntos campos se parsearon
+      -- Contar cuántos campos se parsearon
       v_field_count := v_fields.COUNT;
 
       -- 6. Extraer los valores de cada columna
       if v_field_count >= 8 then
-        v_1 := TRIM(v_fields(1));
-        v_2 := TRIM(v_fields(2));
-        v_3 := TRIM(v_fields(3));
-        v_4 := TRIM(v_fields(4));
-        v_5 := TRIM(v_fields(5));
-        v_6 := TRIM(v_fields(6));
-        v_7 := TRIM(v_fields(7));
-        v_8 := TRIM(v_fields(8));
+        v_folio := TRIM(v_fields(1));
+        v_nombre := TRIM(v_fields(2));
+        v_direccion := TRIM(v_fields(3));
+        v_latitud := TRIM(v_fields(4));
+        v_longitud := TRIM(v_fields(5));
+        v_tel_principal := TRIM(v_fields(6));
+        v_pagina_web := TRIM(v_fields(7));
+        v_empleado_gerente_rid := TRIM(v_fields(8));
 
         -- 7. Realizar las inserciones
         execute immediate v_query
-        using v_1, v_2, v_3, v_4, v_5, v_6, v_7, v_8;
+        using v_folio, v_nombre, v_direccion, v_latitud, v_longitud, v_tel_principal, v_pagina_web, v_empleado_gerente_rid;
       else
         RAISE_APPLICATION_ERROR(-20001,
-          'NÃºmero incorrecto de campos: ' || v_field_count || ' (se esperaban 8)');
+          'Numero incorrecto de campos: ' || v_field_count || ' (se esperaban 8)');
       end if;
 
     exception
       when others then
-        -- Mostrar informaciÃ³n de depuraciÃ³n en caso de error
+        -- Mostrar información de depuración en caso de error
         DBMS_OUTPUT.PUT_LINE('========================================');
         DBMS_OUTPUT.PUT_LINE('Error procesando registro');
-        DBMS_OUTPUT.PUT_LINE('NÃºmero de campos parseados: ' || v_field_count);
+        DBMS_OUTPUT.PUT_LINE('Numero de campos parseados: ' || v_field_count);
         if v_field_count >= 1 then
-          DBMS_OUTPUT.PUT_LINE('Campo 1: [' || SUBSTR(v_fields(1), 1, 50) || ']');
+          DBMS_OUTPUT.PUT_LINE('Campo 1 (FOLIO): [' || SUBSTR(v_fields(1), 1, 50) || ']');
         end if;
         if v_field_count >= 2 then
-          DBMS_OUTPUT.PUT_LINE('Campo 2: [' || SUBSTR(v_fields(2), 1, 50) || ']');
+          DBMS_OUTPUT.PUT_LINE('Campo 2 (NOMBRE): [' || SUBSTR(v_fields(2), 1, 50) || ']');
         end if;
         if v_field_count >= 8 then
-          DBMS_OUTPUT.PUT_LINE('Campo 6: [' || v_fields(6) || ']');
-          DBMS_OUTPUT.PUT_LINE('Campo 7: [' || v_fields(7) || ']');
-          DBMS_OUTPUT.PUT_LINE('Campo 8: [' || v_fields(8) || ']');
+          DBMS_OUTPUT.PUT_LINE('Campo 7 (PAGINA_WEB): [' || SUBSTR(v_fields(7), 1, 100) || ']');
+          DBMS_OUTPUT.PUT_LINE('Campo 8 (EMPLEADO_GERENTE_RID): [' || v_fields(8) || ']');
         end if;
-        DBMS_OUTPUT.PUT_LINE('LÃ­nea (primeros 300 chars): ' || SUBSTR(v_line, 1, 300));
+        DBMS_OUTPUT.PUT_LINE('Linea (primeros 300 chars): ' || SUBSTR(v_line, 1, 300));
         DBMS_OUTPUT.PUT_LINE('SQLCODE: ' || SQLCODE);
         DBMS_OUTPUT.PUT_LINE('SQLERRM: ' || SQLERRM);
         DBMS_OUTPUT.PUT_LINE('========================================');
@@ -181,13 +178,13 @@ begin
   UTL_FILE.FCLOSE(v_file);
   COMMIT;
 
-  DBMS_OUTPUT.PUT_LINE('Carga completada exitosamente');
+  DBMS_OUTPUT.PUT_LINE('Carga de gimnasio completada exitosamente');
 END;
 /
 
 -- Ejecutar el procedimiento
 BEGIN
-  carga_aparato;
+  carga_gimnasio;
 END;
 /
 

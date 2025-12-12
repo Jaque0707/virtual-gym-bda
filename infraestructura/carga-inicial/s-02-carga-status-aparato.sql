@@ -101,7 +101,7 @@ begin
   v_query := 'insert into status_aparato(DESCRIPCION,NOMBRE_STATUS) values (:ph1,:ph2)';
 
   -- 2. Abre el archivo en modo lectura
-  v_file := UTL_FILE.FOPEN('INFRA_DIR', 'status_aparato_clean.csv', 'R', 32767);
+  v_file := UTL_FILE.FOPEN('INFRA_DIR', 'status_aparato.csv', 'R', 32767);
 
   loop
     -- 3. Lee un registro completo del CSV
@@ -165,3 +165,12 @@ begin
   DBMS_OUTPUT.PUT_LINE('Carga de status_aparato completada exitosamente');
 END;
 /
+
+-- Ejecutar el procedimiento
+BEGIN
+  carga_status_aparato;
+END;
+/
+
+COMMIT;
+

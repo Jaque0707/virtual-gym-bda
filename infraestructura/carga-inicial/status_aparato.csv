@@ -1,6 +1,6 @@
 DESCRIPCION,NOMBRE_STATUS
 Estado operativo del aparato,VIGENTE
 Equipo fuera de servicio temporalmente,OBSOLETO
-Avería detectada,AVERIADO
-pendiente de revisión,EN REPARACION
+Averia detectada,AVERIADO
+Pendiente de revision,EN REPARACION
 Uso normal sin incidencias,FUERA DE USO

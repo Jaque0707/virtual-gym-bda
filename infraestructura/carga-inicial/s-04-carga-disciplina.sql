@@ -1,24 +1,19 @@
--- Inserta en la tabla aparato
-create or replace procedure carga_aparato is
+-- Inserta en la tabla disciplina
+create or replace procedure carga_disciplina is
   v_file   UTL_FILE.FILE_TYPE;
   v_line   VARCHAR2(32767);
   v_is_first_line BOOLEAN := TRUE;
 
-  -- columnas (buffers grandes para evitar errores de tamaño)
-  v_1  VARCHAR2(500);
-  v_2  VARCHAR2(500);
-  v_3  VARCHAR2(500);
-  v_4  VARCHAR2(500);
-  v_5  VARCHAR2(2000);
-  v_6  VARCHAR2(500);
-  v_7  VARCHAR2(500);
-  v_8  VARCHAR2(500);
+  -- columnas
+  v_clave       VARCHAR2(500);
+  v_nombre      VARCHAR2(500);
+  v_descripcion VARCHAR2(500);
+  v_icono_b64   VARCHAR2(32767);  -- String Base64 completo
+  v_icono_blob  BLOB;             -- BLOB resultante
 
   v_rows number;
-  v_query varchar2(500);
 
-  -- función auxiliar: parsea CSV respetando comillas
-  -- Retorna un array de campos
+  -- funcion auxiliar: parsea CSV respetando comillas
   type t_fields is table of VARCHAR2(32767) index by PLS_INTEGER;
 
   function parse_csv_line(p_line in VARCHAR2) return t_fields is
@@ -29,7 +24,7 @@ create or replace procedure carga_aparato is
     v_field_idx PLS_INTEGER := 1;
     v_len PLS_INTEGER := LENGTH(p_line);
   begin
-    -- Recorrer carácter por carácter
+    -- Recorrer caracter por caracter
     for i in 1..v_len loop
       v_char := SUBSTR(p_line, i, 1);
 
@@ -42,19 +37,18 @@ create or replace procedure carga_aparato is
         v_field_idx := v_field_idx + 1;
         v_field := '';
       else
-        -- Es un carácter del campo actual
+        -- Es un caracter del campo actual
         v_field := v_field || v_char;
       end if;
     end loop;
 
-    -- Guardar el último campo
+    -- Guardar el ultimo campo
     v_fields(v_field_idx) := v_field;
 
     return v_fields;
   end parse_csv_line;
 
-  -- Función para leer una línea lógica completa del CSV
-  -- (puede abarcar múltiples líneas físicas si hay saltos dentro de comillas)
+  -- Funcion para leer una linea logica completa del CSV
   function read_csv_record(p_file in out UTL_FILE.FILE_TYPE) return VARCHAR2 is
     v_buffer VARCHAR2(32767);
     v_record VARCHAR2(32767) := '';
@@ -66,7 +60,7 @@ create or replace procedure carga_aparato is
       exception
         when NO_DATA_FOUND then
           if LENGTH(v_record) > 0 then
-            -- Limpiar y retornar el último registro
+            -- Limpiar y retornar el ultimo registro
             v_record := REPLACE(v_record, CHR(13), '');
             v_record := REPLACE(v_record, CHR(10), '');
             return v_record;
@@ -75,13 +69,13 @@ create or replace procedure carga_aparato is
           end if;
       end;
 
-      -- Limpiar caracteres de control de la línea
+      -- Limpiar caracteres de control de la linea
       v_buffer := REPLACE(v_buffer, CHR(13), '');
       v_buffer := REPLACE(v_buffer, CHR(10), '');
 
-      -- Agregar la línea al registro actual
+      -- Agregar la linea al registro actual
       if LENGTH(v_record) > 0 then
-        v_record := v_record || ' ' || v_buffer;  -- Espacio en lugar de salto
+        v_record := v_record || ' ' || v_buffer;
       else
         v_record := v_buffer;
       end if;
@@ -94,7 +88,7 @@ create or replace procedure carga_aparato is
         end if;
       end loop;
 
-      -- Si el número de comillas es par, la línea lógica está completa
+      -- Si el numero de comillas es par, la linea logica esta completa
       if MOD(v_quote_count, 2) = 0 then
         return v_record;
       end if;
@@ -103,73 +97,103 @@ create or replace procedure carga_aparato is
     end loop;
   end read_csv_record;
 
+  -- Funcion para convertir Base64 a BLOB
+  function base64_to_blob(p_base64_string in VARCHAR2) return BLOB is
+    v_blob BLOB;
+    v_raw RAW(32767);
+    v_clob CLOB;
+    v_offset INTEGER := 1;
+    v_chunk_size INTEGER := 8000;
+    v_chunk VARCHAR2(32767);
+    v_base64_clean VARCHAR2(32767);
+  begin
+    -- Remover el prefijo "data:image/png;base64," si existe
+    if INSTR(p_base64_string, 'base64,') > 0 then
+      v_base64_clean := SUBSTR(p_base64_string, INSTR(p_base64_string, 'base64,') + 7);
+    else
+      v_base64_clean := p_base64_string;
+    end if;
+
+    -- Crear BLOB vacio
+    DBMS_LOB.CREATETEMPORARY(v_blob, TRUE);
+
+    -- Decodificar Base64 en chunks
+    while v_offset <= LENGTH(v_base64_clean) loop
+      v_chunk := SUBSTR(v_base64_clean, v_offset, v_chunk_size);
+      v_raw := UTL_ENCODE.BASE64_DECODE(UTL_RAW.CAST_TO_RAW(v_chunk));
+      DBMS_LOB.WRITEAPPEND(v_blob, UTL_RAW.LENGTH(v_raw), v_raw);
+      v_offset := v_offset + v_chunk_size;
+    end loop;
+
+    return v_blob;
+  end base64_to_blob;
+
 begin
   -- 1. Iniciamos las variables
-    v_rows := 100;
-    v_query :='insert into aparato(NUMERO_INVENTARIO,NOMBRE,FECHA_ADQUISICION,FECHA_STATUS,DESCRIPCION,SALA_ID,TIPO_APARATO_ID,STATUS_APARATO_ID) values (:ph1,:ph2,:ph3,:ph4,:ph5,:ph6,:ph7,:ph8)';
+  v_rows := 100;
 
   -- 2. Abre el archivo en modo lectura
-  v_file := UTL_FILE.FOPEN('INFRA_DIR', 'aparato.csv', 'R', 32767);
+  v_file := UTL_FILE.FOPEN('INFRA_DIR', 'disciplina.csv', 'R', 32767);
 
   loop
-    -- 3. Lee un registro completo del CSV (puede ser multi-línea)
+    -- 3. Lee un registro completo del CSV
     v_line := read_csv_record(v_file);
 
     exit when v_line IS NULL;
 
-    -- 4. Saltar encabezado (primera línea)
+    -- 4. Saltar encabezado (primera linea)
     if v_is_first_line then
       v_is_first_line := FALSE;
       continue;
     end if;
 
-    -- 5. Parsear la línea CSV
+    -- 5. Parsear la linea CSV
     declare
       v_fields t_fields;
       v_field_count PLS_INTEGER;
     begin
       v_fields := parse_csv_line(v_line);
 
-      -- Contar cuántos campos se parsearon
+      -- Contar cuantos campos se parsearon
       v_field_count := v_fields.COUNT;
 
       -- 6. Extraer los valores de cada columna
-      if v_field_count >= 8 then
-        v_1 := TRIM(v_fields(1));
-        v_2 := TRIM(v_fields(2));
-        v_3 := TRIM(v_fields(3));
-        v_4 := TRIM(v_fields(4));
-        v_5 := TRIM(v_fields(5));
-        v_6 := TRIM(v_fields(6));
-        v_7 := TRIM(v_fields(7));
-        v_8 := TRIM(v_fields(8));
+      if v_field_count >= 4 then
+        v_clave := TRIM(v_fields(1));
+        v_nombre := TRIM(v_fields(2));
+        v_descripcion := TRIM(v_fields(3));
+        v_icono_b64 := TRIM(v_fields(4));
+
+        -- Convertir Base64 a BLOB
+        v_icono_blob := base64_to_blob(v_icono_b64);
 
         -- 7. Realizar las inserciones
-        execute immediate v_query
-        using v_1, v_2, v_3, v_4, v_5, v_6, v_7, v_8;
+        insert into disciplina(CLAVE, NOMBRE, DESCRIPCION, ICONO)
+        values (v_clave, v_nombre, v_descripcion, v_icono_blob);
+
+        -- Liberar el BLOB temporal
+        DBMS_LOB.FREETEMPORARY(v_icono_blob);
       else
         RAISE_APPLICATION_ERROR(-20001,
-          'Número incorrecto de campos: ' || v_field_count || ' (se esperaban 8)');
+          'Numero incorrecto de campos: ' || v_field_count || ' (se esperaban 4)');
       end if;
 
     exception
       when others then
-        -- Mostrar información de depuración en caso de error
+        -- Mostrar informacion de depuracion en caso de error
         DBMS_OUTPUT.PUT_LINE('========================================');
         DBMS_OUTPUT.PUT_LINE('Error procesando registro');
-        DBMS_OUTPUT.PUT_LINE('Número de campos parseados: ' || v_field_count);
+        DBMS_OUTPUT.PUT_LINE('Numero de campos parseados: ' || v_field_count);
         if v_field_count >= 1 then
-          DBMS_OUTPUT.PUT_LINE('Campo 1: [' || SUBSTR(v_fields(1), 1, 50) || ']');
+          DBMS_OUTPUT.PUT_LINE('Campo 1 (CLAVE): [' || SUBSTR(v_fields(1), 1, 50) || ']');
         end if;
         if v_field_count >= 2 then
-          DBMS_OUTPUT.PUT_LINE('Campo 2: [' || SUBSTR(v_fields(2), 1, 50) || ']');
+          DBMS_OUTPUT.PUT_LINE('Campo 2 (NOMBRE): [' || SUBSTR(v_fields(2), 1, 50) || ']');
         end if;
-        if v_field_count >= 8 then
-          DBMS_OUTPUT.PUT_LINE('Campo 6: [' || v_fields(6) || ']');
-          DBMS_OUTPUT.PUT_LINE('Campo 7: [' || v_fields(7) || ']');
-          DBMS_OUTPUT.PUT_LINE('Campo 8: [' || v_fields(8) || ']');
+        if v_field_count >= 4 then
+          DBMS_OUTPUT.PUT_LINE('Campo 4 (ICONO): [' || SUBSTR(v_fields(4), 1, 100) || ']');
         end if;
-        DBMS_OUTPUT.PUT_LINE('Línea (primeros 300 chars): ' || SUBSTR(v_line, 1, 300));
+        DBMS_OUTPUT.PUT_LINE('Linea (primeros 300 chars): ' || SUBSTR(v_line, 1, 300));
         DBMS_OUTPUT.PUT_LINE('SQLCODE: ' || SQLCODE);
         DBMS_OUTPUT.PUT_LINE('SQLERRM: ' || SQLERRM);
         DBMS_OUTPUT.PUT_LINE('========================================');
@@ -181,13 +205,13 @@ begin
   UTL_FILE.FCLOSE(v_file);
   COMMIT;
 
-  DBMS_OUTPUT.PUT_LINE('Carga completada exitosamente');
+  DBMS_OUTPUT.PUT_LINE('Carga de disciplina completada exitosamente');
 END;
 /
 
 -- Ejecutar el procedimiento
 BEGIN
-  carga_aparato;
+  carga_disciplina;
 END;
 /
 
