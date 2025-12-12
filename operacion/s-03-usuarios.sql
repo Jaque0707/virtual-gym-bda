@@ -1,5 +1,5 @@
 -- Dueños del modulo: crea tablas, indices, secuencias vitas etc 
-- ======================================================
+-- ======================================================
 -- Script: s-0x-usuarios.sql
 -- Autor: 
 -- Fecha: 08/Dec/2025
@@ -7,17 +7,29 @@
 -- ======================================================
 connect sys/systemP@pf_operacion as sysdba
 
+-- Eliminación de Usuarios de Administración del Sistema
+DROP USER if exists opera_admin CASCADE;
+DROP USER if exists sys_operator CASCADE;
+DROP USER if exists sys_backup CASCADE;
+DROP USER if exists sys_dg CASCADE;
+DROP USER if exists sys_km CASCADE;
+
+-- Eliminación de Usuarios de Administración Funcional
+DROP USER if exists admin_cliente CASCADE;
+DROP USER if exists admin_empleado CASCADE;
+DROP USER if exists admin_operacion CASCADE; 
+
 -- Usuario de Administración Total del Sistema
-create user sys_admin identified by operacion;
-grant create session, create table, create sequence, create view, create procedure, create trigger to sys_admin;
-grant sysdba to sys_admin;
+create user opera_admin identified by opera_admin;
+grant create session, create table, create sequence, create view, create procedure, create trigger to opera_admin;
+grant sysdba to opera_admin;
 
 -- Asignar cuotas sobre todos los tablespaces relevantes
-alter user sys_admin quota unlimited on clientes_c1_data_ts; 
-alter user sys_admin quota unlimited on clientes_c2_lob_ts; 
-alter user sys_admin quota unlimited on empleado_c1_data_ts;
-alter user sys_admin quota unlimited on empleado_c2_lob_ts; 
-alter user sys_admin quota unlimited on operacion_c1_data_ts; 
+alter user opera_admin quota unlimited on clientes_c1_data_ts; 
+alter user opera_admin quota unlimited on clientes_c2_lob_ts; 
+alter user opera_admin quota unlimited on empleado_c1_data_ts;
+alter user opera_admin quota unlimited on empleado_c2_lob_ts; 
+alter user opera_admin quota unlimited on operacion_c1_data_ts; 
 
 -- Usuario de Operación del Sistema (ej. startup/shutdown)
 create user sys_operator identified by operacion;
@@ -66,7 +78,7 @@ alter user admin_empleado quota unlimited on empleado_c2_lob_ts;
 ------------------------------
 -- ADMINSITRACION DE OPERACION 
 ------------------------------
-create user admin_operacion identified by admin_operacion_pass default tablespace operacion_c1_data_ts;
+create user admin_operacion identified by admin_operacion default tablespace operacion_c1_data_ts;
 
 grant create session, create table, create sequence, create view, create procedure, create trigger, create type to admin_operacion;
 
