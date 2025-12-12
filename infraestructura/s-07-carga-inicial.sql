@@ -32,7 +32,8 @@ prompt Ejecutar procedimientos
 @carga-inicial/s-05-carga-archivo-multimedia
 @carga-inicial/s-06-carga-sala
 @carga-inicial/s-07-carga-aparato
-
+@carga-inicial/s-08-carga-sala-disciplina
+@carga-inicial/s-09-carga-historial-status-aparato
 
 
 Prompt confirmando cambios
