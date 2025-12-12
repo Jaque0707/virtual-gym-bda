@@ -25,8 +25,8 @@ grant create session, create table, create sequence, create view, create procedu
 grant sysdba to opera_admin;
 
 -- Asignar cuotas sobre todos los tablespaces relevantes
-alter user opera_admin quota unlimited on clientes_c1_data_ts; 
-alter user opera_admin quota unlimited on clientes_c2_lob_ts; 
+alter user opera_admin quota unlimited on cliente_c1_data_ts; 
+alter user opera_admin quota unlimited on cliente_c2_lob_ts; 
 alter user opera_admin quota unlimited on empleado_c1_data_ts;
 alter user opera_admin quota unlimited on empleado_c2_lob_ts; 
 alter user opera_admin quota unlimited on operacion_c1_data_ts; 
@@ -37,7 +37,7 @@ grant create session, create table, create sequence, create view to sys_operator
 grant sysoper to sys_operator;
 
 -- Asignar cuotas (si fuera necesario para tareas de bajo nivel, aunque SYSOPER rara vez requiere cuotas)
-alter user sys_operator quota unlimited on clientes_c1_data_ts;
+alter user sys_operator quota unlimited on cliente_c1_data_ts;
 alter user sys_operator quota unlimited on operacion_c1_data_ts;
 
 -- Usuario de Backup y Recuperación
@@ -58,12 +58,12 @@ grant syskm to sys_km;
 -----------------------------
 -- ADMINSITRACION DE CLIENTES 
 -----------------------------
-create user admin_cliente identified by admin_cliente default tablespace clientes_c1_data_ts;
+create user admin_cliente identified by admin_cliente default tablespace cliente_c1_data_ts;
 
 grant create session, create table, create sequence, create view, create procedure, create trigger, create type to admin_cliente;
 
-alter user admin_cliente quota unlimited on clientes_c1_data_ts;
-alter user admin_cliente quota unlimited on clientes_c2_lob_ts;
+alter user admin_cliente quota unlimited on cliente_c1_data_ts;
+alter user admin_cliente quota unlimited on cliente_c2_lob_ts;
 
 ------------------------------
 -- ADMINSITRACION DE EMPLEADOS 

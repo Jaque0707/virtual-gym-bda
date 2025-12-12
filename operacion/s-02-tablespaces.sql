@@ -6,22 +6,22 @@
 
 connect sys/systemP@pf_operacion as sysdba
 
-drop tablespace if exists clientes_c1_data_ts including contents and datafiles;
-drop tablespace if exists clientes_c2_lob_ts including contents and datafiles;
+drop tablespace if exists cliente_c1_data_ts including contents and datafiles;
+drop tablespace if exists cliente_c2_lob_ts including contents and datafiles;
 drop tablespace if exists empleado_c1_data_ts including contents and datafiles;
 drop tablespace if exists empleado_c2_lob_ts including contents and datafiles;
 drop tablespace if exists operacion_c1_data_ts including contents and datafiles;
 
 --TS CLIENTES 
 
-create bigfile tablespace clientes_c1_data_ts datafile
+create bigfile tablespace cliente_c1_data_ts datafile
     '/unam/bda/pf/c1/d01/clientes_c1_data_ts_01.dbf' size 100m
     autoextend on next 10m maxsize unlimited
     extent management local autoallocate
     segment space management auto;
 
 
-create bigfile tablespace clientes_c2_lob_ts datafile
+create bigfile tablespace cliente_c2_lob_ts datafile
     '/unam/bda/pf/c2/d01/clientes_c2_lob_ts_01.dbf' size 200m
     autoextend on next 50m maxsize unlimited
     extent management local autoallocate

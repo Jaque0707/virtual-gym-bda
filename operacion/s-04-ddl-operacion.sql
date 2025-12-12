@@ -38,19 +38,19 @@ CREATE TABLE CLIENTE (
   CURP              VARCHAR2(20)  NOT NULL,
   FOTO              BLOB          NOT NULL,
   CONSTRAINT CLIENTE_EMAIL_UK UNIQUE (EMAIL)
-    USING INDEX TABLESPACE clientes_c1_data_ts,
+    USING INDEX TABLESPACE cliente_c1_data_ts,
   CONSTRAINT CLIENTE_CURP_UK UNIQUE (CURP)
-    USING INDEX TABLESPACE clientes_c1_data_ts,
+    USING INDEX TABLESPACE cliente_c1_data_ts,
   CONSTRAINT CLIENTE_USERNAME_UK UNIQUE (USERNAME)
-    USING INDEX TABLESPACE clientes_c1_data_ts,
+    USING INDEX TABLESPACE cliente_c1_data_ts,
   CONSTRAINT PK_CLIENTE PRIMARY KEY (CLIENTE_ID)
-    USING INDEX TABLESPACE clientes_c1_data_ts
+    USING INDEX TABLESPACE cliente_c1_data_ts
 )
-TABLESPACE clientes_c1_data_ts
+TABLESPACE cliente_c1_data_ts
 LOB (FOTO) STORE AS SECUREFILE 
 CLIENTE_FOTO_LOB (
-  TABLESPACE clientes_c2_lob_ts
-  INDEX cliente_foto_lob_idx (TABLESPACE clientes_c1_data_ts)
+  TABLESPACE cliente_c2_lob_ts
+  INDEX cliente_foto_lob_idx (TABLESPACE cliente_c1_data_ts)
 );
 
 
@@ -62,15 +62,15 @@ CREATE TABLE SENSOR (
   CLIENTE_ID    NUMBER(12)  NOT NULL,
   CONSTRAINT PK_SENSOR PRIMARY KEY (SENSOR_ID)
     USING INDEX
-      TABLESPACE clientes_c1_data_ts,
+      TABLESPACE cliente_c1_data_ts,
   CONSTRAINT SENSOR_CLIENTE_ID_UK UNIQUE(CLIENTE_ID)
     USING INDEX
-      TABLESPACE clientes_c1_data_ts,
+      TABLESPACE cliente_c1_data_ts,
   CONSTRAINT SENSOR_NUMERO_SERIE_UK UNIQUE(NUMERO_SERIE)
     USING INDEX
-      TABLESPACE clientes_c1_data_ts            
+      TABLESPACE cliente_c1_data_ts            
 )
-TABLESPACE clientes_c1_data_ts;
+TABLESPACE cliente_c1_data_ts;
 
 CREATE TABLE CREDENCIAL (
   CREDENCIAL_ID    NUMBER(12)    GENERATED ALWAYS AS IDENTITY,
@@ -81,15 +81,15 @@ CREATE TABLE CREDENCIAL (
   CLIENTE_ID       NUMBER(12)    NOT NULL,
   CONSTRAINT PK_CREDENCIAL PRIMARY KEY (CREDENCIAL_ID)
     USING INDEX
-      TABLESPACE clientes_c1_data_ts,
+      TABLESPACE cliente_c1_data_ts,
   CONSTRAINT CREDENCIAL_FOLIO_UK UNIQUE(FOLIO)
     USING INDEX
-      TABLESPACE clientes_c1_data_ts,
+      TABLESPACE cliente_c1_data_ts,
   CONSTRAINT CREDENCIAL_CODIGO_BARRAS_UK UNIQUE(CODIGO_BARRAS)
     USING INDEX
-      TABLESPACE clientes_c1_data_ts            
+      TABLESPACE cliente_c1_data_ts            
 )
-TABLESPACE clientes_c1_data_ts; 
+TABLESPACE cliente_c1_data_ts; 
 
 CREATE TABLE REGISTRO_MEDIDAS (
   REGISTRO_MEDIDAS_ID      NUMBER(12) GENERATED ALWAYS AS IDENTITY,
@@ -100,9 +100,9 @@ CREATE TABLE REGISTRO_MEDIDAS (
   CLIENTE_ID       NUMBER(12) NOT NULL,
   CONSTRAINT PK_REGISTRO_MEDIDAS PRIMARY KEY (REGISTRO_MEDIDAS_ID)
     USING INDEX
-      TABLESPACE clientes_c1_data_ts            
+      TABLESPACE cliente_c1_data_ts            
 )
-TABLESPACE clientes_c1_data_ts;
+TABLESPACE cliente_c1_data_ts;
 
 ----------------------------------------------------------------------------------
 -- EMPLEADOS

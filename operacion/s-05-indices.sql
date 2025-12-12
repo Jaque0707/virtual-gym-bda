@@ -1,5 +1,18 @@
-connect sys/systemP@pf_operacion as sysdba
+connect opera_admin/opera_admin@pf_operacion as sysdba
 
+
+DROP INDEX empleado_puesto_id_ix;
+DROP INDEX sensor_cliente_id_ix;
+DROP INDEX sesion_instructor_id_ix;
+DROP INDEX bitacora_sesion_id_ix;
+DROP INDEX credencial_cliente_id_ix;
+DROP INDEX instructor_suplente_id_ix;
+DROP INDEX sesion_aparato_sesion_id_ix;
+DROP INDEX registro_medidas_cliente_id_ix;
+DROP INDEX cliente_nombre_completo_ix;
+DROP INDEX empleado_nombre_completo_ix;
+DROP INDEX sesion_cliente_id_folio_ix;
+DROP INDEX huella_dactilar_empleado_dedo_ix;
 
 -- **************Llaves foraneas********************
 
@@ -8,10 +21,10 @@ create index empleado_puesto_id_ix
 on empleado(puesto_id)
 TABLESPACE empleado_c1_data_ts;
 
---PUESTO
-create index sensor_cliente_id_ix 
-on sensor(cliente_id)
-TABLESPACE cliente_c1_data_ts;
+--SENSOR
+--create index sensor_cliente_id_ix 
+--on sensor(cliente_id)
+--TABLESPACE cliente_c1_data_ts;
 
 --SESION 
 create index sesion_instructor_id_ix
@@ -65,7 +78,7 @@ TABLESPACE empleado_c1_data_ts;
 
 --SESION 
 create index sesion_cliente_id_folio_ix
-on (cliente_id, folio)
+on sesion(cliente_id, folio)
 TABLESPACE operacion_c1_data_ts;
 
 --HUELLA DACTILAR 
