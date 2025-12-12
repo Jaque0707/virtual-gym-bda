@@ -1,24 +1,27 @@
--- Inserta en la tabla aparato
+-- @Autor: Benítez Pérez Michelle Paulina
+--         Hernández García Pilar Jaqueline
+-- @Fecha creación: 12/12/2024
+-- @Descripción: Carga datos en la tabla APARATO desde aparato.csv
+
 create or replace procedure carga_aparato is
   v_file   UTL_FILE.FILE_TYPE;
   v_line   VARCHAR2(32767);
   v_is_first_line BOOLEAN := TRUE;
 
-  -- columnas (buffers grandes para evitar errores de tamaño)
-  v_1  VARCHAR2(500);
-  v_2  VARCHAR2(500);
-  v_3  VARCHAR2(500);
-  v_4  VARCHAR2(500);
-  v_5  VARCHAR2(2000);
-  v_6  VARCHAR2(500);
-  v_7  VARCHAR2(500);
-  v_8  VARCHAR2(500);
+  -- Columnas de la tabla APARATO
+  v_numero_inventario   VARCHAR2(18);
+  v_nombre              VARCHAR2(40);
+  v_fecha_adquisicion   DATE;
+  v_fecha_status        DATE;
+  v_descripcion         VARCHAR2(500);
+  v_sala_id             NUMBER(7,0);
+  v_tipo_aparato_id     NUMBER(4,0);
+  v_status_aparato_id   NUMBER(1,0);
 
-  v_rows number;
-  v_query varchar2(500);
+  v_count NUMBER := 0;
+  v_errores NUMBER := 0;
 
-  -- función auxiliar: parsea CSV respetando comillas
-  -- Retorna un array de campos
+  -- Función auxiliar: parsea CSV respetando comillas
   type t_fields is table of VARCHAR2(32767) index by PLS_INTEGER;
 
   function parse_csv_line(p_line in VARCHAR2) return t_fields is
@@ -54,7 +57,6 @@ create or replace procedure carga_aparato is
   end parse_csv_line;
 
   -- Función para leer una línea lógica completa del CSV
-  -- (puede abarcar múltiples líneas físicas si hay saltos dentro de comillas)
   function read_csv_record(p_file in out UTL_FILE.FILE_TYPE) return VARCHAR2 is
     v_buffer VARCHAR2(32767);
     v_record VARCHAR2(32767) := '';
@@ -104,91 +106,144 @@ create or replace procedure carga_aparato is
   end read_csv_record;
 
 begin
-  -- 1. Iniciamos las variables
-    v_rows := 100;
-    v_query :='insert into aparato(NUMERO_INVENTARIO,NOMBRE,FECHA_ADQUISICION,FECHA_STATUS,DESCRIPCION,SALA_ID,TIPO_APARATO_ID,STATUS_APARATO_ID) values (:ph1,:ph2,:ph3,:ph4,:ph5,:ph6,:ph7,:ph8)';
+  dbms_output.put_line('=============================================================');
+  dbms_output.put_line('CARGA DE DATOS - TABLA APARATO');
+  dbms_output.put_line('=============================================================');
+  dbms_output.put_line('');
 
-  -- 2. Abre el archivo en modo lectura
+  -- Abrir archivo CSV
   v_file := UTL_FILE.FOPEN('INFRA_DIR', 'aparato.csv', 'R', 32767);
 
   loop
-    -- 3. Lee un registro completo del CSV (puede ser multi-línea)
+    -- Leer línea del archivo
     v_line := read_csv_record(v_file);
 
     exit when v_line IS NULL;
 
-    -- 4. Saltar encabezado (primera línea)
+    -- Saltar encabezado
     if v_is_first_line then
       v_is_first_line := FALSE;
+      dbms_output.put_line('Encabezado: ' || SUBSTR(v_line, 1, 100) || '...');
+      dbms_output.put_line('');
       continue;
     end if;
 
-    -- 5. Parsear la línea CSV
+    -- Procesar cada línea
     declare
       v_fields t_fields;
       v_field_count PLS_INTEGER;
     begin
       v_fields := parse_csv_line(v_line);
-
-      -- Contar cuántos campos se parsearon
       v_field_count := v_fields.COUNT;
 
-      -- 6. Extraer los valores de cada columna
-      if v_field_count >= 8 then
-        v_1 := TRIM(v_fields(1));
-        v_2 := TRIM(v_fields(2));
-        v_3 := TRIM(v_fields(3));
-        v_4 := TRIM(v_fields(4));
-        v_5 := TRIM(v_fields(5));
-        v_6 := TRIM(v_fields(6));
-        v_7 := TRIM(v_fields(7));
-        v_8 := TRIM(v_fields(8));
-
-        -- 7. Realizar las inserciones
-        execute immediate v_query
-        using v_1, v_2, v_3, v_4, v_5, v_6, v_7, v_8;
-      else
+      -- Verificar que tengamos 8 campos
+      if v_field_count < 8 then
         RAISE_APPLICATION_ERROR(-20001,
           'Número incorrecto de campos: ' || v_field_count || ' (se esperaban 8)');
       end if;
 
+      -- Parsear campos
+      v_numero_inventario  := TRIM(v_fields(1));
+      v_nombre             := TRIM(v_fields(2));
+
+      -- CRÍTICO: Convertir fechas desde formato DD/MM/YYYY
+      v_fecha_adquisicion  := TO_DATE(TRIM(v_fields(3)), 'DD/MM/YYYY');
+      v_fecha_status       := TO_DATE(TRIM(v_fields(4)), 'DD/MM/YYYY');
+
+      v_descripcion        := TRIM(v_fields(5));
+      v_sala_id            := TO_NUMBER(TRIM(v_fields(6)));
+      v_tipo_aparato_id    := TO_NUMBER(TRIM(v_fields(7)));
+      v_status_aparato_id  := TO_NUMBER(TRIM(v_fields(8)));
+
+      -- Insertar registro en la tabla APARATO
+      insert into aparato(
+        numero_inventario,
+        nombre,
+        fecha_adquisicion,
+        fecha_status,
+        descripcion,
+        sala_id,
+        tipo_aparato_id,
+        status_aparato_id
+      ) values (
+        v_numero_inventario,
+        v_nombre,
+        v_fecha_adquisicion,
+        v_fecha_status,
+        v_descripcion,
+        v_sala_id,
+        v_tipo_aparato_id,
+        v_status_aparato_id
+      );
+
+      v_count := v_count + 1;
+
+      -- Mostrar progreso cada 20 registros
+      if MOD(v_count, 20) = 0 then
+        dbms_output.put_line('  [' || LPAD(v_count, 3, '0') || '] Procesados...');
+      end if;
+
     exception
-      when others then
-        -- Mostrar información de depuración en caso de error
-        DBMS_OUTPUT.PUT_LINE('========================================');
-        DBMS_OUTPUT.PUT_LINE('Error procesando registro');
-        DBMS_OUTPUT.PUT_LINE('Número de campos parseados: ' || v_field_count);
+      when OTHERS then
+        v_errores := v_errores + 1;
+        dbms_output.put_line('');
+        dbms_output.put_line('  ✗ ERROR en línea ' || (v_count + v_errores + 1));
+        dbms_output.put_line('    ' || SQLERRM);
         if v_field_count >= 1 then
-          DBMS_OUTPUT.PUT_LINE('Campo 1: [' || SUBSTR(v_fields(1), 1, 50) || ']');
+          dbms_output.put_line('    Campo 1 (numero_inventario): [' || SUBSTR(v_fields(1), 1, 30) || ']');
         end if;
         if v_field_count >= 2 then
-          DBMS_OUTPUT.PUT_LINE('Campo 2: [' || SUBSTR(v_fields(2), 1, 50) || ']');
+          dbms_output.put_line('    Campo 2 (nombre): [' || SUBSTR(v_fields(2), 1, 30) || ']');
         end if;
-        if v_field_count >= 8 then
-          DBMS_OUTPUT.PUT_LINE('Campo 6: [' || v_fields(6) || ']');
-          DBMS_OUTPUT.PUT_LINE('Campo 7: [' || v_fields(7) || ']');
-          DBMS_OUTPUT.PUT_LINE('Campo 8: [' || v_fields(8) || ']');
+        if v_field_count >= 3 then
+          dbms_output.put_line('    Campo 3 (fecha_adquisicion): [' || v_fields(3) || ']');
         end if;
-        DBMS_OUTPUT.PUT_LINE('Línea (primeros 300 chars): ' || SUBSTR(v_line, 1, 300));
-        DBMS_OUTPUT.PUT_LINE('SQLCODE: ' || SQLCODE);
-        DBMS_OUTPUT.PUT_LINE('SQLERRM: ' || SQLERRM);
-        DBMS_OUTPUT.PUT_LINE('========================================');
-        RAISE;
+        if v_field_count >= 4 then
+          dbms_output.put_line('    Campo 4 (fecha_status): [' || v_fields(4) || ']');
+        end if;
+        dbms_output.put_line('    Línea (primeros 200 chars): ' || SUBSTR(v_line, 1, 200));
+        dbms_output.put_line('');
+        -- Continuar con el siguiente registro
     end;
-
   end loop;
 
   UTL_FILE.FCLOSE(v_file);
-  COMMIT;
 
-  DBMS_OUTPUT.PUT_LINE('Carga completada exitosamente');
-END;
+  dbms_output.put_line('');
+  dbms_output.put_line('=============================================================');
+  dbms_output.put_line('RESUMEN DE CARGA');
+  dbms_output.put_line('=============================================================');
+  dbms_output.put_line('  Registros procesados: ' || v_count);
+  dbms_output.put_line('  Registros con error:  ' || v_errores);
+  dbms_output.put_line('  Registros insertados: ' || (v_count - v_errores));
+
+  if v_errores > 0 then
+    dbms_output.put_line('');
+    dbms_output.put_line(' ADVERTENCIA: Hubo errores durante la carga');
+  else
+    dbms_output.put_line(' Carga completada sin errores');
+  end if;
+
+  dbms_output.put_line('=============================================================');
+
+exception
+  when OTHERS then
+    if UTL_FILE.IS_OPEN(v_file) then
+      UTL_FILE.FCLOSE(v_file);
+    end if;
+    dbms_output.put_line('');
+    dbms_output.put_line('ERROR FATAL: ' || SQLERRM);
+    raise;
+end carga_aparato;
 /
 
--- Ejecutar el procedimiento
-BEGIN
-  carga_aparato;
-END;
-/
+show errors
 
-COMMIT;
+prompt
+prompt Ejecutando carga de datos para tabla APARATO...
+prompt
+
+set serveroutput on size unlimited
+exec carga_aparato;
+
+commit;
