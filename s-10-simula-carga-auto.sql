@@ -11,10 +11,12 @@ create or replace procedure simula_carga_auto (
     p_porcentaje  in number default 10   -- % de autos cuyo estatus va a cambiar
 )
 is
+ --ID de tablas relacionadas 
   v_auto_id         number;
   v_status_id       number;
   v_agencia_id      number;
   v_cliente_id      number;
+
   v_tipo            char(1);
   v_rand            number;
   v_query_auto          varchar2(1000);
