@@ -1,4 +1,4 @@
-connect opera_admin/opera_admin@pf_operacion as sysdba
+connect opera_admin/opera_admin@pf_operacion 
 
 create or replace procedure carga_credenciales is
   v_file          UTL_FILE.FILE_TYPE;

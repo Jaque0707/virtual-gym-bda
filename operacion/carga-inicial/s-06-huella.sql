@@ -1,22 +1,15 @@
-connect opera_admin/opera_admin@pf_operacion
+connect opera_admin/opera_admin@pf_operacion 
 
-create or replace procedure carga_clientes is 
+create or replace procedure carga_huellas is 
   v_file   UTL_FILE.FILE_TYPE;
   v_line   VARCHAR2(32767);
   v_line_no PLS_INTEGER := 0;
   v_is_first_line BOOLEAN := TRUE;
 
   -- columnas
-  v_nombre           VARCHAR2(40);
-  v_ap_paterno       VARCHAR2(40);
-  v_ap_materno       VARCHAR2(40);
-  v_email            VARCHAR2(200);
-  v_username         VARCHAR2(40);
-  v_password         VARCHAR2(40);
-  v_direccion        VARCHAR2(200);
-  v_fecha_txt        VARCHAR2(20);
-  v_curp_txt         VARCHAR2(30);
-  v_foto_txt         VARCHAR2(200);
+  v_empleado_txt   VARCHAR2(30);
+  v_num_dedo_txt   VARCHAR2(30);
+  v_huella_txt     VARCHAR2(200);
 
   -- función auxiliar para obtener la n-ésima columna separada por coma
   FUNCTION get_col(p_line IN VARCHAR2, p_pos IN PLS_INTEGER)
@@ -49,14 +42,12 @@ create or replace procedure carga_clientes is
     RETURN NULLIF(v_val, '');
   END;
 
-
-
 BEGIN
-  DBMS_OUTPUT.PUT_LINE('Leyendo OPERA_DIR/cliente.csv ...');
+  DBMS_OUTPUT.PUT_LINE('Leyendo OPERA_DIR/huellas.csv ...');
 
-  v_file := UTL_FILE.FOPEN('OPERA_DIR', 'cliente.csv', 'R', 32767);
+  v_file := UTL_FILE.FOPEN('OPERA_DIR', 'huellas.csv', 'R', 32767);
 
-  for  i in 1 .. 201 LOOP  
+  for  i in 1 .. 500 LOOP  
     BEGIN
       UTL_FILE.GET_LINE(v_file, v_line);
       v_line_no := v_line_no + 1;
@@ -71,45 +62,26 @@ BEGIN
       CONTINUE;
     END IF;
 
-    -- extraer columnas
-    v_nombre      := get_col(v_line, 1);
-    v_ap_paterno  := get_col(v_line, 2);
-    v_ap_materno  := get_col(v_line, 3);
-    v_email       := get_col(v_line, 4);
-    v_username    := get_col(v_line, 5);
-    v_password    := get_col(v_line, 6);
-    v_direccion   := get_col(v_line, 7);
-    v_fecha_txt   := get_col(v_line, 8);
-    v_curp_txt    := get_col(v_line, 9);
-    v_foto_txt    := get_col(v_line,10); -- no lo usamos, pero lo leemos
+    -- extraer columnas (orden esperado en huella_dactilar.csv):
+    -- 1 EMPLEADO_ID, 2 NUM_DEDO, 3 HUELLA_DACTILAR
+    v_empleado_txt := get_col(v_line, 1);
+    v_num_dedo_txt := get_col(v_line, 2);
+    v_huella_txt   := get_col(v_line, 3); -- no lo usamos, pero lo leemos
 
     BEGIN
-      INSERT INTO cliente (
-        nombre,
-        apellido_paterno,
-        apellido_materno,
-        email,
-        username,
-        password,
-        direccion,
-        fecha_nacimiento,
-        curp,
-        foto
+      INSERT INTO huella_dactilar (
+        empleado_id,
+        num_dedo,
+        huella_dactilar
       ) VALUES (
-        v_nombre,
-        v_ap_paterno,
-        v_ap_materno,
-        v_email,
-        v_username,
-        v_password,
-        v_direccion,
-        TO_DATE(v_fecha_txt, 'DD/MM/YYYY'),
-        SUBSTR(v_curp_txt, 1, 20),
+        TO_NUMBER(v_empleado_txt),
+        TO_NUMBER(v_num_dedo_txt),
         EMPTY_BLOB()  -- BLOB inicial
       );
     EXCEPTION
       WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('ERROR en línea #'||v_line_no||' fecha_txt="'||v_fecha_txt||'"');
+        DBMS_OUTPUT.PUT_LINE('ERROR en línea #'||v_line_no||
+                             ' empleado_id="'||v_empleado_txt||'" num_dedo="'||v_num_dedo_txt||'"');
         DBMS_OUTPUT.PUT_LINE('LINEA: '||SUBSTR(v_line, 1, 300));
         RAISE;
     END;
@@ -117,9 +89,9 @@ BEGIN
   END LOOP;
   UTL_FILE.FCLOSE(v_file);
   
-  DBMS_OUTPUT.PUT_LINE('Carga clientes OK.');
+  DBMS_OUTPUT.PUT_LINE('Carga huellas OK.');
 
-  EXCEPTION
+EXCEPTION
   WHEN OTHERS THEN
     IF UTL_FILE.IS_OPEN(v_file) THEN
       UTL_FILE.FCLOSE(v_file);
@@ -131,8 +103,6 @@ END;
 
 SET SERVEROUTPUT ON
 BEGIN
-  carga_clientes;
+  carga_huellas;
 END;
 /
-
-

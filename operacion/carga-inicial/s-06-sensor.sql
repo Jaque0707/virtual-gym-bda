@@ -1,4 +1,4 @@
-connect opera_admin/opera_admin@pf_operacion as sysdba
+connect opera_admin/opera_admin@pf_operacion
 
 create or replace procedure carga_sensores is
   v_file          UTL_FILE.FILE_TYPE;

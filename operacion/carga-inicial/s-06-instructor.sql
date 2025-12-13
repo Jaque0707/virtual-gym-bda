@@ -1,15 +1,17 @@
 connect opera_admin/opera_admin@pf_operacion 
 
-create or replace procedure carga_puestos is 
+create or replace procedure carga_instructores is 
   v_file   UTL_FILE.FILE_TYPE;
   v_line   VARCHAR2(32767);
   v_line_no PLS_INTEGER := 0;
   v_is_first_line BOOLEAN := TRUE;
 
   -- columnas
-  v_clave         VARCHAR2(5);
-  v_descripcion   VARCHAR2(200);
-  v_nombre        VARCHAR2(40);
+  v_empleado_txt       VARCHAR2(30);
+  v_suplente_txt       VARCHAR2(30);
+  v_cedula             VARCHAR2(20);
+  v_anios_txt          VARCHAR2(30);
+  v_url_trayectoria    VARCHAR2(500);
 
   -- función auxiliar para obtener la n-ésima columna separada por coma
   FUNCTION get_col(p_line IN VARCHAR2, p_pos IN PLS_INTEGER)
@@ -43,11 +45,11 @@ create or replace procedure carga_puestos is
   END;
 
 BEGIN
-  DBMS_OUTPUT.PUT_LINE('Leyendo OPERA_DIR/puesto.csv ...');
+  DBMS_OUTPUT.PUT_LINE('Leyendo OPERA_DIR/instructor.csv ...');
 
-  v_file := UTL_FILE.FOPEN('OPERA_DIR', 'puesto.csv', 'R', 32767);
+  v_file := UTL_FILE.FOPEN('OPERA_DIR', 'instructor.csv', 'R', 32767);
 
-  for  i in 1 .. 500 LOOP  
+  for  i in 1 .. 25 LOOP  
     BEGIN
       UTL_FILE.GET_LINE(v_file, v_line);
       v_line_no := v_line_no + 1;
@@ -62,32 +64,40 @@ BEGIN
       CONTINUE;
     END IF;
 
-    -- extraer columnas
-    v_clave       := get_col(v_line, 1);
-    v_descripcion := get_col(v_line, 2);
-    v_nombre      := get_col(v_line, 3);
+    -- extraer columnas (orden esperado en instructor.csv):
+    -- 1 EMPLEADO_ID, 2 SUPLENTE_ID, 3 CEDULA_PROFESIONAL, 4 ANIOS_EXPERIENCIA, 5 URL_TRAYECTORIA
+    v_empleado_txt    := get_col(v_line, 1);
+    v_suplente_txt    := get_col(v_line, 2);
+    v_cedula          := get_col(v_line, 3);
+    v_anios_txt       := get_col(v_line, 4);
+    v_url_trayectoria := get_col(v_line, 5);
 
     BEGIN
-      INSERT INTO puesto (
-        clave,
-        descripcion,
-        nombre
+      INSERT INTO instructor (
+        empleado_id,
+        suplente_id,
+        cedula_profesional,
+        anios_experiencia,
+        url_trayectoria
       ) VALUES (
-        v_clave,
-        v_descripcion,
-        v_nombre
+        TO_NUMBER(v_empleado_txt),
+        TO_NUMBER(v_suplente_txt),
+        SUBSTR(v_cedula, 1, 20),
+        TO_NUMBER(v_anios_txt),
+        SUBSTR(v_url_trayectoria, 1, 500)
       );
     EXCEPTION
       WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('ERROR en línea #'||v_line_no||' clave="'||v_clave||'"');
+        DBMS_OUTPUT.PUT_LINE('ERROR en línea #'||v_line_no||
+                             ' empleado_id="'||v_empleado_txt||'" cedula="'||v_cedula||'"');
         DBMS_OUTPUT.PUT_LINE('LINEA: '||SUBSTR(v_line, 1, 300));
         RAISE;
     END;
 
   END LOOP;
   UTL_FILE.FCLOSE(v_file);
-
-  DBMS_OUTPUT.PUT_LINE('Carga puestos OK.');
+  
+  DBMS_OUTPUT.PUT_LINE('Carga instructores OK.');
 
 EXCEPTION
   WHEN OTHERS THEN
@@ -101,7 +111,6 @@ END;
 
 SET SERVEROUTPUT ON
 BEGIN
-  carga_puestos;
+  carga_instructores;
 END;
 /
-

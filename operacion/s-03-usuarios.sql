@@ -20,7 +20,7 @@ DROP USER if exists admin_empleado CASCADE;
 DROP USER if exists admin_operacion CASCADE; 
 
 -- Usuario de Administración Total del Sistema
-create user opera_admin identified by opera_admin;
+create user opera_admin identified by opera_admin default tablespace operacion_c1_data_ts;
 grant create session, create table, create sequence, create view, create procedure, create trigger to opera_admin;
 grant sysdba to opera_admin;
 

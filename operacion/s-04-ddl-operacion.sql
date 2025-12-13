@@ -1,5 +1,5 @@
 
-connect opera_admin/opera_admin@pf_operacion as sysdba
+connect opera_admin/opera_admin@pf_operacion 
 
 
 -- Operación
@@ -19,6 +19,9 @@ DROP TABLE IF EXISTS REGISTRO_MEDIDAS;
 DROP TABLE IF EXISTS CREDENCIAL;
 DROP TABLE IF EXISTS SENSOR;
 DROP TABLE IF EXISTS CLIENTE;
+
+
+DROP TABLE IF EXISTS sesion_folio_cliente; 
 
 
 ----------------------------------------------------------------------------------
@@ -229,7 +232,7 @@ CREATE TABLE SESION (
     CHECK (FOLIO > 0),
   CONSTRAINT SESION_DURACION_MINUTOS_CHK
     CHECK (DURACION_MINUTOS > 0),
-  CONSTRAINT SESION_FOLIO_UK UNIQUE(FOLIO)
+  CONSTRAINT SESION_FOLIO_CLIENTE_UK UNIQUE(FOLIO,CLIENTE_ID)
     USING INDEX
       TABLESPACE operacion_c1_data_ts            
 )
@@ -332,3 +335,39 @@ ALTER TABLE registro_medidas
 --   ADD CONSTRAINT fk_sesaparato_aparato
 --   FOREIGN KEY (aparato_id)
 --   REFERENCES aparato (aparato_id);
+
+
+CREATE TABLE sesion_folio_cliente (
+  cliente_id   NUMBER(12) NOT NULL,
+  ultimo_folio NUMBER(12) NOT NULL,
+  CONSTRAINT pk_sesion_folio_cliente PRIMARY KEY (cliente_id)
+);
+
+
+---Triggers 
+CREATE OR REPLACE TRIGGER trg_sesion_folio
+BEFORE INSERT ON sesion
+FOR EACH ROW
+DECLARE
+  v_nuevo_folio NUMBER(12);
+BEGIN
+  UPDATE sesion_folio_cliente
+  SET ultimo_folio = ultimo_folio + 1
+  WHERE cliente_id = :NEW.cliente_id;
+
+  IF SQL%ROWCOUNT = 0 THEN
+    v_nuevo_folio := 1;
+    INSERT INTO sesion_folio_cliente (cliente_id, ultimo_folio)
+    VALUES (:NEW.cliente_id, v_nuevo_folio);
+  ELSE
+    SELECT ultimo_folio
+    INTO v_nuevo_folio
+    FROM sesion_folio_cliente
+    WHERE cliente_id = :NEW.cliente_id;
+  END IF;
+
+  :NEW.folio := v_nuevo_folio;
+END;
+/
+SHOW ERRORS TRIGGER trg_sesion_folio
+

@@ -1,4 +1,4 @@
-connect opera_admin/opera_admin@pf_operacion as sysdba
+connect opera_admin/opera_admin@pf_operacion
 
 
 DROP INDEX IF EXISTS empleado_puesto_id_ix;
