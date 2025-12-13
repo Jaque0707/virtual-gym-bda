@@ -1,0 +1,12 @@
+#Autor: Benítez Pérez Michelle Paulina
+#       Hernández García Pilar Jaqueline
+#Fecha creación: 12/12/2025
+#Descripción: 
+# autenticar a nivel de la cdb como sys
+
+connect target "sys/systemP as sysdba"
+
+BACKUP AS BACKUPSET INCREMENTAL LEVEL 1 DATABASE 
+PLUS ARCHIVELOG TAG 'JUEVES_DIFF';
+
+exit;
