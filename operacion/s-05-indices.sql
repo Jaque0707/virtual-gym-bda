@@ -1,18 +1,18 @@
 connect opera_admin/opera_admin@pf_operacion as sysdba
 
 
-DROP INDEX empleado_puesto_id_ix;
-DROP INDEX sensor_cliente_id_ix;
-DROP INDEX sesion_instructor_id_ix;
-DROP INDEX bitacora_sesion_id_ix;
-DROP INDEX credencial_cliente_id_ix;
-DROP INDEX instructor_suplente_id_ix;
-DROP INDEX sesion_aparato_sesion_id_ix;
-DROP INDEX registro_medidas_cliente_id_ix;
-DROP INDEX cliente_nombre_completo_ix;
-DROP INDEX empleado_nombre_completo_ix;
-DROP INDEX sesion_cliente_id_folio_ix;
-DROP INDEX huella_dactilar_empleado_dedo_ix;
+DROP INDEX IF EXISTS empleado_puesto_id_ix;
+DROP INDEX IF EXISTS sensor_cliente_id_ix;
+DROP INDEX IF EXISTS sesion_instructor_id_ix;
+DROP INDEX IF EXISTS bitacora_sesion_id_ix;
+DROP INDEX IF EXISTS credencial_cliente_id_ix;
+DROP INDEX IF EXISTS instructor_suplente_id_ix;
+DROP INDEX IF EXISTS sesion_aparato_sesion_id_ix;
+DROP INDEX IF EXISTS registro_medidas_cliente_id_ix;
+DROP INDEX IF EXISTS cliente_nombre_completo_ix;
+DROP INDEX IF EXISTS empleado_nombre_completo_ix;
+DROP INDEX IF EXISTS sesion_cliente_id_folio_ix;
+DROP INDEX IF EXISTS huella_dactilar_empleado_dedo_ix;
 
 -- **************Llaves foraneas********************
 

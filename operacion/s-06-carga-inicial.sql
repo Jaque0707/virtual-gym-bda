@@ -4,12 +4,21 @@
 --se sale de SQL *Plus
 
 whenever sqlerror exit rollback
-connect admin_cliente/admin_cliente@pf_operacion
+connect sys/systemP@pf_operacion as sysdba
+
+CREATE OR REPLACE DIRECTORY OPERA_DIR AS 'operacion/carga-inicial';
+
+GRANT READ, WRITE ON DIRECTORY OPERA_DIR TO opera_admin; 
+
 set define off
 
 Prompt realizando la carga de datos
-@carga-inicial/s-05-cliente.sql
 
+@carga-inicial/s-06-cliente.sql
+@carga-inicial/s-06-sensor.sql
+@carga-inicial/s-06-credencial.sql
+@carga-inicial/s-06-registro-medidas.sql
+@carga-inicial/s-06-puesto.sql
 --Agregar los demás scripts de esta carpetas
 
 set define on
