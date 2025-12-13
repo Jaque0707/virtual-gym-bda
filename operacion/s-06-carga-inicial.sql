@@ -25,8 +25,10 @@ Prompt realizando la carga de datos
 @carga-inicial/s-06-admin.sql
 @carga-inicial/s-06-huella.sql
 @carga-inicial/s-06-sesion.sql
---Agregar los demás scripts de esta carpetas
+@carga-inicial/s-06-bitacora.sql
+@carga-inicial/s-06-sesion-aparato.sql
 
+--Agregar los demás scripts de esta carpetas
 set define on
 Prompt confirmando cambios
 commit;
