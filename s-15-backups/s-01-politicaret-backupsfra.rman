@@ -1,0 +1,17 @@
+--@Autor: Benítez Pérez Michelle Paulina
+--        Hernández García Pilar Jaqueline
+--@Fecha creación: 10/12/2025
+--@Descripción: 
+
+-- /etc/profile.d/99-custom-env.sh
+--     export NLS_DATE_FORMAT='yyyy/mm/dd hh24:mi:ss'
+--     alias rman='rlwrap rman'
+
+
+connect target "sys/systemP as sysdba"
+-- política de retención
+configure retention policy to recovery window of 7 days;
+-- parámetros de RMAN para que todos los backups se guarden en la fra
+delete obsolete;
+configure controlfile autobackup format for device type disk clear;
+configure channel device type disk clear;

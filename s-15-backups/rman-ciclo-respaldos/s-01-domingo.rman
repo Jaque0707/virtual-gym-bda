@@ -1,0 +1,17 @@
+#Autor: Benítez Pérez Michelle Paulina
+#       Hernández García Pilar Jaqueline
+#Fecha creación: 12/12/2025
+#Descripción: 
+# autenticar a nivel de la cdb como sys
+
+connect target "sys/systemP as sysdba"
+
+# Nivel 0 sirve de base para los incrementales posteriores
+# Se incluyen los archive logs para asegurar consistencia
+BACKUP AS BACKUPSET INCREMENTAL LEVEL 0 DATABASE 
+PLUS ARCHIVELOG TAG 'DOMINGO_LVL0';
+
+# Limpieza de obsoletos según política de retención: 7 días
+DELETE NOPROMPT OBSOLETE;
+
+exit;

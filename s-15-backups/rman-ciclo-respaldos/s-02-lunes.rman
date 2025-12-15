@@ -1,0 +1,13 @@
+#Autor: Benítez Pérez Michelle Paulina
+#       Hernández García Pilar Jaqueline
+#Fecha creación: 12/12/2025
+#Descripción: 
+# autenticar a nivel de la cdb como sys
+
+connect target "sys/systemP as sysdba"
+
+# Por defecto, el nivel 1 es diferencial (cambios desde el último nivel 1 o 0)
+BACKUP AS BACKUPSET INCREMENTAL LEVEL 1 DATABASE 
+PLUS ARCHIVELOG TAG 'LUNES_DIFF';
+
+exit;
