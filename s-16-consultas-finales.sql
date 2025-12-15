@@ -128,7 +128,7 @@ select u.con_id, u.username, q.tablespace_name,
   trunc(sum(q.bytes)/1024/1024, 2) as charged_mb,
   case
     when max(q.max_bytes) = -1 then 'UNLIMITED'
-    else to_char(round(max(q.max_bytes)/1024/1024, 2))
+    else to_char(trunc(max(q.max_bytes)/1024/1024, 2))
   end as max_mb
   from cdb_users u
   join cdb_ts_quotas q
@@ -146,7 +146,7 @@ select u.con_id, u.username, q.tablespace_name,
 select tablespace_name, owner,
   count(*) as total_segments,
   sum(extents) as total_extents,
-  round(sum(bytes)/1024/1024, 2) as total_mb
+  trunc(sum(bytes)/1024/1024, 2) as total_mb
 from cdb_segments
 where owner like '%INFRA%'
    or owner like '%OPERA%'
@@ -157,7 +157,7 @@ order by tablespace_name, owner;
 -- ==========================================================
 -- Q. Total de espacio reservado para el proyecto
 -- ==========================================================
-select round(sum(bytes)/1024/1024, 2) as total_mb
+select trunc(sum(bytes)/1024/1024, 2) as total_mb
   from cdb_segments
  where owner like '%INFRA%'
     or owner like '%OPERA%'

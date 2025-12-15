@@ -6,12 +6,33 @@
 
 connect target "sys/systemP as sysdba"
 
-BACKUP AS BACKUPSET INCREMENTAL LEVEL 1 DATABASE 
-PLUS ARCHIVELOG TAG 'VIERNES_DIFF';
+# PUNTO DE CONSULTA ===========================================================
+
+# Será necesario realizar un nuevo backup para evitar la pérdida de datos?
+report need backup;
+
+# =============================================================================
+
+backup as backupset incremental level 1 database plus archivelog tag 'c0_free_dif_bs_n1_07';
 
 # Verificación del estado de recuperación antes del fin de semana
-RESTORE DATABASE PREVIEW;
-# Reporte de obsolescencia
-REPORT OBSOLETE;
+
+# PUNTO DE CONSULTA ===========================================================
+
+# ¿Qué sucedería si en este punto un datafile se pierde? ->  clientes_c2_lob_ts_01.dbf
+
+# conultar en pdb como sys : select file_id from dba_data_files where file_name like '%clientes_c2_lob%'; ejemplo : 62
+restore datafile 62 preview;
+
+# Este comando muestra los backups que se tendrían que utilizar para realizar un recovery completo del datafile.
+
+
+# ¿Qué sucedería si se quisiera restaurar toda la BD en este momento? 
+restore database preview;
+
+# ¿Qué backups podrían considerarse como obsoletos? 
+report obsolete;
+
+# =============================================================================
 
 exit;

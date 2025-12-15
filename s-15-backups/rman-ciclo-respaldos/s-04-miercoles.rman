@@ -7,7 +7,6 @@
 connect target "sys/systemP as sysdba"
 
 # Respalda solo cambios desde el acumulativo del Martes
-BACKUP AS BACKUPSET INCREMENTAL LEVEL 1 DATABASE 
-PLUS ARCHIVELOG TAG 'MIERCOLES_DIFF';
+backup as backupset incremental level 1 database plus archivelog tag 'c0_free_dif_bs_n1_05';
 
 exit;

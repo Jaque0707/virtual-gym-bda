@@ -1,0 +1,6 @@
+connect target "infra_admin/infra_admin@pf_infraestr as sysbackup"
+
+# image copy 
+backup as copy device type disk pluggable database pf_infraestr tag 'c0_infra_full_copy_02';
+
+exit;

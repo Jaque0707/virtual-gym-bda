@@ -1,11 +1,11 @@
 #Autor: Benítez Pérez Michelle Paulina
 #       Hernández García Pilar Jaqueline
 #Fecha creación: 12/12/2025
-#Descripción: 
-# autenticar a nivel de la cdb como sys
+#Descripción: borrar los backups antes de empezar el ciclo
 
 connect target "sys/systemP as sysdba"
 
-backup as backupset incremental level 1 database plus archivelog tag 'c0_free_dif_bs_n1_06';
+delete backup;
+delete copy;
 
 exit;

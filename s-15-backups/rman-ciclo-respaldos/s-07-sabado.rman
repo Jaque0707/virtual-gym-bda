@@ -6,10 +6,7 @@
 
 connect target "sys/systemP as sysdba"
 
-BACKUP AS BACKUPSET INCREMENTAL LEVEL 1 DATABASE 
-PLUS ARCHIVELOG TAG 'SABADO_DIFF';
+backup as backupset incremental level 1 database plus archivelog tag 'c0_free_dif_bs_n1_08';
 
-# Limpieza final de la semana # Es necesario o no?
-# DELETE NOPROMPT OBSOLETE;
 
 exit;

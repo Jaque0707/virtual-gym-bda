@@ -1,0 +1,7 @@
+
+connect target "sys_backup/operacion@pf_operacion as sysbackup"
+
+# image copy 
+backup as copy device type disk pluggable database pf_operacion tag 'c0_operacion_full_copy_02';
+
+exit;

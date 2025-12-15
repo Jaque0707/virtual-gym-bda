@@ -8,11 +8,27 @@ connect target "sys/systemP as sysdba"
 
 # Cumulativo: Respalda todo desde el último Nivel 0 (Domingo)
 # Absorbe la carga alta del lunes para agilizar una recuperación futura.
-BACKUP AS BACKUPSET INCREMENTAL LEVEL 1 CUMULATIVE DATABASE 
-PLUS ARCHIVELOG TAG 'MARTES_CUMUL';
+backup as backupset incremental level 1 cumulative database plus archivelog tag 'c0_free_cum_bs_n1_04';
 
-# CONSULTAS
-RESTORE DATABASE PREVIEW;
-LIST BACKUP SUMMARY;
+
+# PUNTO DE CONSULTA ===========================================================
+
+# ¿Qué sucedería si en este punto un datafile se pierde? ->  infra_c1_data_ts.dbf
+
+# conultar en pdb como sys : select file_id from dba_data_files where file_name like '%infra_c1_data%'; ejemplo : 52
+restore datafile 52 preview;
+
+# Este comando muestra los backups que se tendrían que utilizar para realizar un recovery completo del datafile.
+
+
+
+# ¿Qué sucedería si se quisiera restaurar toda la BD en este momento? 
+restore database preview;
+
+# ¿Qué backups podrían considerarse como obsoletos? 
+report obsolete;
+
+# Será necesario realizar un nuevo backup para evitar la pérdida de datos?
+report need backup;
 
 exit;

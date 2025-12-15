@@ -17,23 +17,37 @@ pausa() {
     echo
 }
 
+
+
+# antes de iniciar el ciclo eliminar backups por espacio ...
+
+echo "==> Eliminar Backups en RMAN "
+rman @rman-ciclo-respaldos/s-00-borra-backups.rman
+
+
 # ==========================================
 # DOMINGO: Full Backup Incremental Nivel 0 + Carga Baja
 # ==========================================
 
+# respaldo a las 2:00 am
+echo "==> Backup RMAN Nivel 0..."
+rman @rman-ciclo-respaldos/s-01-domingo.rman
+rman @rman-ciclo-respaldos/s-01-domingo-infra.rman
+rman @rman-ciclo-respaldos/s-01-domingo-opera.rman
+
+# llegan nuevos aparatos a los gimnasios, casi no cambia el status por carga baja
+# pocas sesiones de menos duración 
+
 echo "==> Simulando carga: Domingo"
 sqlplus -s $USER_INFRA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_gym(p_num_aparatos => 5, p_porcentaje_cambios => 5);
+EXEC simula_carga_gym(p_num_aparatos => 10, p_porcentaje_cambios => 1);
 EOF
 
 sqlplus -s $USER_OPERA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_sesiones(p_num_sesiones => 5, p_duracion_min => 30, p_duracion_max => 120);
+EXEC simula_carga_sesiones(p_num_sesiones => 5, p_duracion_min => 10, p_duracion_max => 30);
 EOF
-
-echo "==> Backup RMAN Nivel 0..."
-rman @rman-ciclo-respaldos/s-01-domingo.rman
 
 pausa
 
@@ -41,19 +55,23 @@ pausa
 ## LUNES: Incremental Nivel 1 Diferencial + Carga Alta
 ## ==========================================
 
+# respaldo a las 3:00 am
+echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
+rman @rman-ciclo-respaldos/s-02-lunes.rman
+
+# casi no llegan aparatos y cambia el estatus de varios por alta carga
+# más sesiones de más duración 
+
 echo "==> Simulando carga: Lunes"
 sqlplus -s $USER_INFRA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_gym(p_num_aparatos => 15, p_porcentaje_cambios => 15);
+EXEC simula_carga_gym(p_num_aparatos => 3, p_porcentaje_cambios => 15);
 EOF
 
 sqlplus -s $USER_OPERA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_sesiones(p_num_sesiones => 8, p_duracion_min => 30, p_duracion_max => 120);
+EXEC simula_carga_sesiones(p_num_sesiones => 15, p_duracion_min => 30, p_duracion_max => 120);
 EOF
-
-echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
-rman @rman-ciclo-respaldos/s-02-lunes.rman
 
 pausa
 
@@ -61,20 +79,24 @@ pausa
 ## MARTES: Incremental 1 Cumulativo + Carga Moderada + Punto de Consulta
 ## ==========================================
 
+# respaldo a las 3:00 am
+echo
+echo "==> Backup RMAN Incremental Nivel 1 Cumulativo"
+rman @rman-ciclo-respaldos/s-03-martes.rman
+
+# casi no llegan aparatos y cambia el estatus de varios por carga moderada
+# cantidad moderada de sesiones duración de hasta 100 minutos
+
 echo "==> Simulando carga: Martes"
 sqlplus -s $USER_INFRA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_gym(p_num_aparatos => 10, p_porcentaje_cambios => 10);
+EXEC simula_carga_gym(p_num_aparatos => 3, p_porcentaje_cambios => 10);
 EOF
 
 sqlplus -s $USER_OPERA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_sesiones(p_num_sesiones => 7, p_duracion_min => 30, p_duracion_max => 120);
+EXEC simula_carga_sesiones(p_num_sesiones => 10, p_duracion_min => 30, p_duracion_max => 100);
 EOF
-
-echo
-echo "==> Backup RMAN Incremental Nivel 1 Cumulativo"
-rman @rman-ciclo-respaldos/s-03-martes.rman
 
 pausa
 
@@ -82,19 +104,23 @@ pausa
 ## MIÉRCOLES: Incremental 1 Diferencial + Carga Moderada-Alta
 ## ==========================================
 
+# respaldo a las 3:00 am
+echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
+rman @rman-ciclo-respaldos/s-04-miercoles.rman
+
+# casi no llegan aparatos y cambia el estatus de varios por carga moderada-alta
+# cantidad moderada-alta de sesiones duración de hasta 100 minutos
+
 echo "==> Simulando carga: Miércoles"
 sqlplus -s $USER_INFRA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_gym(p_num_aparatos => 10, p_porcentaje_cambios => 12);
+EXEC simula_carga_gym(p_num_aparatos => 3, p_porcentaje_cambios => 12);
 EOF
 
 sqlplus -s $USER_OPERA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_sesiones(p_num_sesiones => 8, p_duracion_min => 30, p_duracion_max => 120);
+EXEC simula_carga_sesiones(p_num_sesiones => 12, p_duracion_min => 30, p_duracion_max => 100);
 EOF
-
-echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
-rman @rman-ciclo-respaldos/s-04-miercoles.rman
 
 pausa
 
@@ -102,19 +128,23 @@ pausa
 ## JUEVES: Incremental 1 Diferencial + Carga Moderada
 ## ==========================================
 
+# respaldo a las 3:00 am
+echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
+rman @rman-ciclo-respaldos/s-05-jueves.rman
+
+# casi no llegan aparatos y cambia el estatus de varios por carga moderada
+# cantidad moderada de sesiones duración de hasta 100 minutos
+
 echo "==> Simulando carga: Jueves"
 sqlplus -s $USER_INFRA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_gym(p_num_aparatos => 10, p_porcentaje_cambios => 10);
+EXEC simula_carga_gym(p_num_aparatos => 3, p_porcentaje_cambios => 10);
 EOF
 
 sqlplus -s $USER_OPERA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_sesiones(p_num_sesiones => 6, p_duracion_min => 30, p_duracion_max => 120);
+EXEC simula_carga_sesiones(p_num_sesiones => 10, p_duracion_min => 30, p_duracion_max => 100);
 EOF
-
-echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
-rman @rman-ciclo-respaldos/s-05-jueves.rman
 
 pausa
 
@@ -122,39 +152,51 @@ pausa
 ## VIERNES: Incremental 1 Diferencial + Carga Moderada + Punto de Consulta
 ## ==========================================
 
+echo
+read -p "Base de datos en mount. Para hacer backups en modo CONSISTENTE. Presiona ENTER para continuar ... " _
+echo
+
+# respaldo a las 3:00 am
+echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
+rman @rman-ciclo-respaldos/s-06-viernes.rman
+
+echo
+read -p "Base de datos en open. Para cargar los datos. Presiona ENTER para continuar ... " _
+echo
+
+# casi no llegan aparatos y cambia el estatus de varios por carga moderada
+# cantidad moderada de sesiones duración de hasta 100 minutos
+
 echo "==> Simulando carga: Viernes"
 sqlplus -s $USER_INFRA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_gym(p_num_aparatos => 12, p_porcentaje_cambios => 10);
+EXEC simula_carga_gym(p_num_aparatos => 3, p_porcentaje_cambios => 10);
 EOF
 
 sqlplus -s $USER_OPERA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_sesiones(p_num_sesiones => 6, p_duracion_min => 30, p_duracion_max => 120);
+EXEC simula_carga_sesiones(p_num_sesiones => 10, p_duracion_min => 30, p_duracion_max => 100);
 EOF
-
-echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
-rman @rman-ciclo-respaldos/s-06-viernes.rman
 
 pausa
 
 ## ==========================================
-## SÁBADO: Incremental 1 Diferencial + Carga Alta + DELETE OBSOLETE
+## SÁBADO: Incremental 1 Diferencial + Carga Alta
 ## ==========================================
+# respaldo a las 3:00 am
+echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
+rman @rman-ciclo-respaldos/s-07-sabado.rman
 
 echo "==> Simulando carga: Sábado"
 sqlplus -s $USER_INFRA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_gym(p_num_aparatos => 8, p_porcentaje_cambios => 8);
+EXEC simula_carga_gym(p_num_aparatos => 8, p_porcentaje_cambios => 15);
 EOF
 
 sqlplus -s $USER_OPERA << EOF
 SET SERVEROUTPUT ON SIZE UNLIMITED
-EXEC simula_carga_sesiones(p_num_sesiones => 9, p_duracion_min => 30, p_duracion_max => 120);
+EXEC simula_carga_sesiones(p_num_sesiones => 15, p_duracion_min => 30, p_duracion_max => 120);
 EOF
-
-echo "==> Backup RMAN Incremental Nivel 1 Diferencial"
-rman @rman-ciclo-respaldos/s-07-sabado.rman
 
 pausa
 
@@ -200,5 +242,4 @@ pausa
 ##   * Backup: Incremental Nivel 1 Diferencial
 ##   * Infraestructura: 8 aparatos nuevos, 8% cambios status
 ##   * Operación: 90 sesiones (pico de fin de semana)
-##   * Acción especial: DELETE OBSOLETE
 ## ==========================================

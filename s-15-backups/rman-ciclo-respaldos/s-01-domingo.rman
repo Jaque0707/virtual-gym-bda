@@ -6,12 +6,11 @@
 
 connect target "sys/systemP as sysdba"
 
-# Nivel 0 sirve de base para los incrementales posteriores
-# Se incluyen los archive logs para asegurar consistencia
-BACKUP AS BACKUPSET INCREMENTAL LEVEL 0 DATABASE 
-PLUS ARCHIVELOG TAG 'DOMINGO_LVL0';
+# Nivel 0 - base para los incrementales posteriores. Se incluyen los archive logs 
+# para asegurar consistencia
+backup as backupset incremental level 0 database plus archivelog tag 'c0_free_full_bs_n0_01';
 
 # Limpieza de obsoletos según política de retención: 7 días
-DELETE NOPROMPT OBSOLETE;
+delete obsolete;
 
 exit;

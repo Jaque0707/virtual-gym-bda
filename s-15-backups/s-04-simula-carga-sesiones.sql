@@ -79,11 +79,6 @@ begin
       :1, :2
     )';
 
-  dbms_output.put_line('==========================================================');
-  dbms_output.put_line('Iniciando simulación de carga de sesiones');
-  dbms_output.put_line('Sesiones a generar: ' || p_num_sesiones);
-  dbms_output.put_line('==========================================================');
-
   -- Generar sesiones nuevas
   for i in 1 .. p_num_sesiones loop
 
@@ -171,22 +166,10 @@ begin
       end;
     end loop;
 
-    -- Mostrar progreso cada 10 sesiones
-    if mod(i, 10) = 0 then
-      dbms_output.put_line('Procesadas ' || i || ' sesiones...');
-    end if;
-
   end loop;
 
   -- Commit de todos los cambios
   commit;
-
-  dbms_output.put_line('==========================================================');
-  dbms_output.put_line('Simulación completada exitosamente');
-  dbms_output.put_line('Total sesiones insertadas: ' || p_num_sesiones);
-  dbms_output.put_line('Total registros bitácora (aprox): ' ||
-                       round(p_num_sesiones * ((p_duracion_min + p_duracion_max) / 2)));
-  dbms_output.put_line('==========================================================');
 
   -- Mostrar estadísticas
   declare
@@ -201,11 +184,6 @@ begin
     select count(*) into v_sesiones_hoy
       from sesion where trunc(fecha_inicio) = trunc(sysdate);
 
-    dbms_output.put_line('Estadísticas generales:');
-    dbms_output.put_line('  - Total sesiones en BD: ' || v_total_sesiones);
-    dbms_output.put_line('  - Total registros bitácora: ' || v_total_bitacora);
-    dbms_output.put_line('  - Total calorías registradas: ' || round(v_total_calorias, 2));
-    dbms_output.put_line('  - Sesiones hoy: ' || v_sesiones_hoy);
   end;
 
 exception
@@ -218,21 +196,3 @@ end simula_carga_sesiones;
 /
 
 show errors
-
-prompt ========================================
-prompt Procedimiento creado exitosamente
-prompt ========================================
-prompt
-prompt Uso:
-prompt   exec simula_carga_sesiones();
-prompt   exec simula_carga_sesiones(p_num_sesiones => 100);
-prompt   exec simula_carga_sesiones(p_num_sesiones => 200, p_duracion_min => 45, p_duracion_max => 90);
-prompt   exec simula_carga_sesiones(p_num_sesiones => 30, p_dias_atras => 7);
-prompt
-prompt Parámetros:
-prompt   - p_num_sesiones: Número de sesiones a generar (default: 50)
-prompt   - p_duracion_min: Duración mínima en minutos (default: 30)
-prompt   - p_duracion_max: Duración máxima en minutos (default: 120)
-prompt   - p_dias_atras: Días hacia atrás para generar fechas (default: 1)
-prompt   - p_num_aparatos_sesion: Aparatos promedio por sesión (default: 3)
-prompt ========================================
