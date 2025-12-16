@@ -1,0 +1,18 @@
+#Autor: Benítez Pérez Michelle Paulina
+#       Hernández García Pilar Jaqueline
+#Fecha creación: 12/12/2025
+#Descripción: 
+# autenticar a nivel de la cdb como sys
+
+connect target "sys/systemP as sysdba"
+
+# Cumulativo: Respalda todo desde el último Nivel 0 (Domingo)
+# Absorbe la carga alta del lunes para agilizar una recuperación futura.
+BACKUP AS BACKUPSET INCREMENTAL LEVEL 1 CUMULATIVE DATABASE 
+PLUS ARCHIVELOG TAG 'MARTES_CUMUL';
+
+# CONSULTAS
+RESTORE DATABASE PREVIEW;
+LIST BACKUP SUMMARY;
+
+exit;

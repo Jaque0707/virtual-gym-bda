@@ -1,0 +1,17 @@
+#Autor: Benítez Pérez Michelle Paulina
+#       Hernández García Pilar Jaqueline
+#Fecha creación: 12/12/2025
+#Descripción: 
+# autenticar a nivel de la cdb como sys
+
+connect target "sys/systemP as sysdba"
+
+BACKUP AS BACKUPSET INCREMENTAL LEVEL 1 DATABASE 
+PLUS ARCHIVELOG TAG 'VIERNES_DIFF';
+
+# Verificación del estado de recuperación antes del fin de semana
+RESTORE DATABASE PREVIEW;
+# Reporte de obsolescencia
+REPORT OBSOLETE;
+
+exit;
