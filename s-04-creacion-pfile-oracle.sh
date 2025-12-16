@@ -25,17 +25,16 @@ db_block_size=8192
 db_domain=fi.unam
 enable_pluggable_database=true
 db_recovery_file_dest_size=40G
-db_recovery_file_dest=/unam/bda/disks/d14/fra
+db_recovery_file_dest=/unam/bda/pf/c3/d14/fra
 undo_tablespace=UNDOTBS1
 db_flashback_retention_target=1440
 open_cursors=300
-diagnostic_dest=/unam/bda/disks/d11
+diagnostic_dest=/unam/bda/pf/c3/d15/diagnostic
 log_archive_max_processes=2
 log_archive_format=arch_%t_%s_%r.arc
 log_archive_dest_1='LOCATION=/unam/bda/pf/c3/archivelogs/FREE/disk_a MANDATORY'
 log_archive_dest_2='LOCATION=USE_DB_RECOVERY_FILE_DEST'
 log_archive_min_succeed_dest=1
-log_archive_trace=12
 " > $pfile
 
 echo "Listo"

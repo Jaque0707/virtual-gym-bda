@@ -24,22 +24,25 @@ create database free
   character set AL32UTF8
   national character set AL16UTF16
   extent management local
-    datafile '/opt/oracle/oradata/FREE/system01.dbf'
+    datafile '/unam/bda/pf/c0/d05/FREE/system01.dbf'
       size 500m autoextend on next 10m maxsize unlimited
-  sysaux datafile '/opt/oracle/oradata/FREE/sysaux01.dbf'
+  sysaux datafile '/unam/bda/pf/c0/d05/FREE/sysaux01.dbf'
     size 300m autoextend on next 10m maxsize unlimited
   default tablespace users 
-    datafile '/opt/oracle/oradata/FREE/users01.dbf'
+    datafile '/unam/bda/pf/c2/d05/FREE/users01.dbf'
     size 50m autoextend on next 10m maxsize unlimited
   default temporary tablespace tempts1
-    tempfile '/opt/oracle/oradata/FREE/temp01.dbf'
+    tempfile '/unam/bda/pf/c0/d05/FREE/temp01.dbf'
     size 20m autoextend on next 1m maxsize unlimited
   undo tablespace undotbs1
-    datafile '/opt/oracle/oradata/FREE/undotbs01.dbf'
+    datafile '/unam/bda/pf/c2/d05/FREE/undotbs01.dbf'
     size 100m autoextend on next 5m maxsize unlimited
   enable pluggable database
     seed
-      file_name_convert = ('/opt/oracle/oradata/FREE','/opt/oracle/oradata/FREE/pdbseed')
+      file_name_convert = (
+        '/unam/bda/pf/c0/d05/FREE','/unam/bda/pf/c0/d05/FREE/pdbseed',
+        '/unam/bda/pf/c2/d05/FREE', '/unam/bda/pf/c2/d05/FREE/pdbseed'
+      )
     system datafiles size 250m autoextend on next 10m maxsize unlimited
     sysaux datafiles size 200m autoextend on next 10m maxsize unlimited
   local undo on
