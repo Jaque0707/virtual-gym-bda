@@ -78,7 +78,7 @@ alter user admin_empleado quota unlimited on empleado_c2_lob_ts;
 ------------------------------
 -- ADMINSITRACION DE OPERACION 
 ------------------------------
-create user admin_operacion identified by admin_operacion default tablespace operacion_c1_data_ts;
+create user admin_empleadoidentified by admin_operacion default tablespace operacion_c1_data_ts;
 
 grant create session, create table, create sequence, create view, create procedure, create trigger, create type to admin_operacion;
 
