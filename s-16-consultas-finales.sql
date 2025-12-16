@@ -3,9 +3,20 @@
 --@Fecha creación: 09/12/2025
 --@Descripción: 
 
+connect sys/systemP as sysdba
+
+set linesize window
+col host_name format a20 
+col name format a30 
+col member format a20
+col handle format a20
+col username format a20 
+col last_login format a20
+col owner format a20 
 -- ==========================================================
 -- A. Datos generales de la instancia (v$instance)
 -- ==========================================================
+
 SELECT instance_name, host_name, version, status, archiver, database_status 
   FROM v$instance;
 
