@@ -116,7 +116,7 @@ SELECT tag, count(*) as num_archivos,
 SELECT username, account_status, default_tablespace, temporary_tablespace, 
   local_temp_tablespace, created, last_login, con_id 
   FROM cdb_users 
-  where username like '%INFRA%' or username like '%PF%'
+  where username like '%INFRA%' or username like '%OPERA%'
   ORDER BY con_id;
 
 -- REVISAR ULTIMAS CONSULTAS
@@ -130,7 +130,7 @@ SELECT q.con_id, q.username, q.tablespace_name,
             ELSE TO_CHAR(ROUND(q.max_bytes/1024/1024, 2)) 
        END as max_mb
 FROM cdb_ts_quotas q
-WHERE q.username LIKE '%AUTOS%' OR q.username LIKE '%JRC%' -- <Ajusta este filtro
+WHERE q.username LIKE '%INFRA%' OR q.username LIKE '%OPERA%' -- <Ajusta este filtro
 ORDER BY q.con_id, q.username;
 
 -- ==========================================================
@@ -139,7 +139,7 @@ ORDER BY q.con_id, q.username;
 SELECT con_id, owner, count(*) as total_segments, sum(extents) as total_extents, 
        ROUND(sum(bytes)/1024/1024, 2) as total_mb 
 FROM cdb_segments 
-WHERE owner LIKE '%AUTOS%' OR owner LIKE '%JRC%' -- <Ajusta este filtro
+WHERE owner LIKE '%INFRA%' OR owner LIKE '%OPERA%' -- <Ajusta este filtro
 GROUP BY con_id, owner;
 
 -- ==========================================================
@@ -147,4 +147,4 @@ GROUP BY con_id, owner;
 -- ==========================================================
 SELECT trunc(SUM(bytes)/1024/1024, 2) as total_mb 
   FROM cdb_segments 
-  WHERE owner LIKE '%INFRA%' OR owner LIKE '%PF%'; 
+  WHERE owner LIKE '%INFRA%' OR owner LIKE '%OPERA%'; 
